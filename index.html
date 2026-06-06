@@ -4,11 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>PS Outreach — Daily 50</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #F4F4F4; color: #111; }
 
-.header { background: #fff; border-bottom: 1px solid #E0E0E0; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 20; }
+.header { background: #fff; border-bottom: 1px solid #E0E0E0; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; }
 .header h1 { font-size: 17px; font-weight: 700; }
 .header .sub { font-size: 11px; color: #999; margin-top: 2px; }
 .hdr-right { display: flex; gap: 8px; align-items: center; }
@@ -18,7 +20,15 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .btn-dark:disabled { opacity: 0.4; cursor: default; }
 .btn-outline { background: #fff; color: #333; border: 1px solid #D0D0D0; }
 
-.main { max-width: 900px; margin: 0 auto; padding: 20px 16px; }
+/* Main tabs */
+.main-tabs { display: flex; gap: 0; background: #fff; border-bottom: 1px solid #E0E0E0; padding: 0 24px; }
+.main-tab { font-size: 13px; padding: 10px 16px; cursor: pointer; border-bottom: 2px solid transparent; color: #666; font-weight: 500; }
+.main-tab.active { color: #111; border-bottom-color: #111; }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.main { max-width: 960px; margin: 0 auto; padding: 20px 16px; }
 
 .cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 18px; }
 .card { background: #fff; border-radius: 9px; padding: 12px 14px; border: 1px solid #E5E5E5; }
@@ -49,10 +59,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .detail.open { display: block; }
 .detail-inner { padding: 16px; background: #FAFAFA; }
 
+/* Inner tabs */
+.inner-tabs { display: flex; gap: 4px; margin-bottom: 14px; background: #F0F0F0; padding: 3px; border-radius: 8px; width: fit-content; }
+.itab { font-size: 11px; padding: 5px 12px; border-radius: 6px; border: none; cursor: pointer; background: transparent; color: #555; font-weight: 500; }
+.itab.active { background: #fff; color: #111; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+
+.itab-content { display: none; }
+.itab-content.active { display: block; }
+
 .dl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: #aaa; margin-bottom: 6px; font-weight: 600; }
+.detail-section { margin-bottom: 14px; }
 
 .rep-badge { display: inline-block; font-size: 11px; background: #EEF2FF; color: #3730A3; padding: 2px 8px; border-radius: 6px; font-weight: 500; margin-bottom: 10px; }
-
 .contact-chips { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: #666; margin-bottom: 14px; }
 
 .spend-row { display: flex; gap: 8px; margin-bottom: 14px; }
@@ -62,15 +80,22 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .spend-delta { font-size: 11px; margin-top: 2px; }
 .up { color: #1D9E75; } .down { color: #C0392B; }
 
-.prod-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 14px; }
+.prod-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 6px; }
 .prod-table th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; padding: 0 0 6px; border-bottom: 1px solid #EEE; }
 .prod-table td { padding: 7px 0; border-bottom: 1px solid #F5F5F5; vertical-align: top; }
 .prod-table td:last-child { text-align: right; white-space: nowrap; }
 .prod-name { font-weight: 500; color: #111; line-height: 1.4; }
+.prod-meta { font-size: 10px; color: #888; margin-top: 1px; }
 .lost { color: #C0392B; font-weight: 600; }
 .active-tag { color: #1D9E75; font-weight: 600; }
+.switched-tag { font-size: 10px; background: #FEF9E7; color: #B7770D; padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
 
-/* Zoho invoice panel */
+/* Pitch products */
+.pitch-item { display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; background: #fff; border: 1px solid #E8E8E8; border-radius: 8px; margin-bottom: 6px; }
+.pitch-name { font-size: 12px; font-weight: 500; color: #111; }
+.pitch-rev { font-size: 11px; color: #1D9E75; font-weight: 600; }
+
+/* Invoice panel */
 .invoice-panel { background: #fff; border: 1px solid #E8E8E8; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; }
 .invoice-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid #F5F5F5; font-size: 12px; }
 .invoice-row:last-child { border-bottom: none; }
@@ -83,8 +108,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .inv-amount { margin-left: auto; font-weight: 600; }
 .inv-loading { font-size: 12px; color: #aaa; padding: 8px 0; }
 
-/* Email section */
-.email-section { background: #fff; border: 1px solid #E8E8E8; border-radius: 8px; padding: 14px; margin-top: 14px; }
+/* Email */
+.email-section { background: #fff; border: 1px solid #E8E8E8; border-radius: 8px; padding: 14px; }
 .email-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
 .etab { font-size: 11px; padding: 4px 10px; border-radius: 6px; border: 1px solid #E0E0E0; cursor: pointer; background: #fff; }
 .etab.active { background: #111; color: #fff; border-color: #111; }
@@ -92,10 +117,20 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .email-body { font-size: 13px; color: #333; white-space: pre-wrap; line-height: 1.7; background: #FAFAFA; border-radius: 6px; padding: 12px; border: 1px solid #F0F0F0; }
 .copy-btn { margin-top: 10px; font-size: 11px; padding: 5px 12px; cursor: pointer; border-radius: 6px; border: 1px solid #D0D0D0; background: #fff; }
 
+/* Map */
+#map-tab-content { padding: 16px; }
+#main-map { height: 600px; border-radius: 10px; border: 1px solid #E0E0E0; }
+.map-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; font-size: 12px; color: #555; align-items: center; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+
+/* Nearby map */
+#nearby-map { height: 280px; border-radius: 8px; border: 1px solid #E8E8E8; margin-bottom: 10px; }
+
 .loading { text-align: center; padding: 4rem; color: #999; font-size: 14px; }
 .error-box { background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 10px; padding: 16px; color: #991B1B; font-size: 13px; }
 .footer { text-align: center; font-size: 11px; color: #ccc; margin-top: 20px; padding-bottom: 40px; }
-.detail-section { margin-bottom: 14px; }
+
+@media(max-width:640px){ .cards{grid-template-columns:repeat(3,1fr);} .spend-row{flex-wrap:wrap;} }
 </style>
 </head>
 <body>
@@ -111,32 +146,55 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
   </div>
 </div>
 
-<div class="main">
-  <div class="cards" id="cards" style="display:none">
-    <div class="card"><div class="card-label">Total today</div><div class="card-value" id="cTotal">—</div><div class="card-sub" id="cPool"></div></div>
-    <div class="card"><div class="card-label">Never ordered</div><div class="card-value" style="color:#C0392B" id="cNever">—</div><div class="card-sub">priority 1</div></div>
-    <div class="card"><div class="card-label">Gone dark 90d+</div><div class="card-value" style="color:#B7770D" id="cDark">—</div><div class="card-sub">priority 2</div></div>
-    <div class="card"><div class="card-label">Lapsed 45–90d</div><div class="card-value" style="color:#1A5CA8" id="cLapsed">—</div><div class="card-sub">priority 3</div></div>
-    <div class="card"><div class="card-label">Dropped SKU</div><div class="card-value" style="color:#6B21A8" id="cDropped">—</div><div class="card-sub">priority 4</div></div>
-  </div>
+<!-- Main tabs -->
+<div class="main-tabs">
+  <div class="main-tab active" onclick="switchMainTab('list',this)">📋 Today's 50</div>
+  <div class="main-tab" onclick="switchMainTab('map',this)">🗺 All clinics map</div>
+</div>
 
-  <div class="filters" id="filters" style="display:none">
-    <button class="pill active" onclick="setFilter('all')" data-f="all">All</button>
-    <button class="pill" onclick="setFilter('never')" data-f="never">Never ordered</button>
-    <button class="pill" onclick="setFilter('dark')" data-f="dark">Gone dark</button>
-    <button class="pill" onclick="setFilter('lapsed')" data-f="lapsed">Lapsed</button>
-    <button class="pill" onclick="setFilter('dropped')" data-f="dropped">Dropped SKU</button>
-  </div>
+<!-- LIST TAB -->
+<div id="list-tab-content" class="tab-content active">
+  <div class="main">
+    <div class="cards" id="cards" style="display:none">
+      <div class="card"><div class="card-label">Total today</div><div class="card-value" id="cTotal">—</div><div class="card-sub" id="cPool"></div></div>
+      <div class="card"><div class="card-label">Never ordered</div><div class="card-value" style="color:#C0392B" id="cNever">—</div><div class="card-sub">priority 1</div></div>
+      <div class="card"><div class="card-label">Gone dark 90d+</div><div class="card-value" style="color:#B7770D" id="cDark">—</div><div class="card-sub">priority 2</div></div>
+      <div class="card"><div class="card-label">Lapsed 45–90d</div><div class="card-value" style="color:#1A5CA8" id="cLapsed">—</div><div class="card-sub">priority 3</div></div>
+      <div class="card"><div class="card-label">Dropped SKU</div><div class="card-value" style="color:#6B21A8" id="cDropped">—</div><div class="card-sub">priority 4</div></div>
+    </div>
 
-  <div id="stateLoading" class="loading">Loading clinic data…<br><small style="color:#bbb;font-size:12px;display:block;margin-top:8px">Parsing data server-side</small></div>
-  <div id="stateError" class="error-box" style="display:none"><strong>Error:</strong> <span id="errMsg"></span><br><button class="btn btn-outline" style="margin-top:10px" onclick="load()">Retry</button></div>
-  <div class="list" id="clinicList" style="display:none"></div>
-  <div class="footer" id="footer"></div>
+    <div class="filters" id="filters" style="display:none">
+      <button class="pill active" onclick="setFilter('all')" data-f="all">All</button>
+      <button class="pill" onclick="setFilter('never')" data-f="never">Never ordered</button>
+      <button class="pill" onclick="setFilter('dark')" data-f="dark">Gone dark</button>
+      <button class="pill" onclick="setFilter('lapsed')" data-f="lapsed">Lapsed</button>
+      <button class="pill" onclick="setFilter('dropped')" data-f="dropped">Dropped SKU</button>
+    </div>
+
+    <div id="stateLoading" class="loading">Loading clinic data…<br><small style="color:#bbb;font-size:12px;display:block;margin-top:8px">Parsing data server-side</small></div>
+    <div id="stateError" class="error-box" style="display:none"><strong>Error:</strong> <span id="errMsg"></span><br><button class="btn btn-outline" style="margin-top:10px" onclick="load()">Retry</button></div>
+    <div class="list" id="clinicList" style="display:none"></div>
+    <div class="footer" id="footer"></div>
+  </div>
+</div>
+
+<!-- MAP TAB -->
+<div id="map-tab-content" class="tab-content">
+  <div id="map-tab-content-inner" style="padding:16px;max-width:960px;margin:0 auto">
+    <div class="map-legend">
+      <span><span class="legend-dot" style="background:#C0392B"></span>Never ordered</span>
+      <span><span class="legend-dot" style="background:#B7770D"></span>Gone dark</span>
+      <span><span class="legend-dot" style="background:#1A5CA8"></span>Lapsed</span>
+      <span><span class="legend-dot" style="background:#6B21A8"></span>Dropped SKU</span>
+      <span style="color:#aaa;font-size:11px">Click a pin for details</span>
+    </div>
+    <div id="main-map"></div>
+    <div style="font-size:11px;color:#aaa;margin-top:8px">Geocoding via OpenStreetMap — addresses load as you view the map</div>
+  </div>
 </div>
 
 <script>
 const WORKER = "https://50clinicoutreach.jp-d4e.workers.dev";
-
 const META = {
   never:   { label:"Never ordered",   color:"#C0392B", bg:"#FDECEA" },
   dark:    { label:"Gone dark 90d+",  color:"#B7770D", bg:"#FEF3CD" },
@@ -145,9 +203,21 @@ const META = {
 };
 
 let allClinics = [], currentFilter = "all";
+let mainMap = null, mainMapInited = false;
+const geocodeCache = {};
 
 document.getElementById("dateStr").textContent = new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"});
 
+// ── Main tab switch ───────────────────────────────────────────
+function switchMainTab(tab, btn) {
+  document.querySelectorAll(".main-tab").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById(`${tab}-tab-content`).classList.add("active");
+  if (tab === "map" && !mainMapInited && allClinics.length) initMainMap();
+}
+
+// ── Load ──────────────────────────────────────────────────────
 async function load() {
   show("loading");
   document.getElementById("refreshBtn").disabled = true;
@@ -183,11 +253,7 @@ function updatePills(clinics) {
   });
 }
 
-function reroll() {
-  allClinics = [...allClinics].sort(()=>Math.random()-0.5);
-  renderList(currentFilter);
-}
-
+function reroll() { allClinics = [...allClinics].sort(()=>Math.random()-0.5); renderList(currentFilter); }
 function setFilter(f) {
   currentFilter = f;
   document.querySelectorAll(".pill").forEach(p => p.classList.toggle("active", p.dataset.f===f));
@@ -197,19 +263,19 @@ function setFilter(f) {
 function fmt(n) { return Number(n||0).toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}); }
 function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
+// ── Render list ───────────────────────────────────────────────
 function renderList(filter) {
   const list = filter==="all" ? allClinics : allClinics.filter(c=>c.bucket===filter);
   const el = document.getElementById("clinicList");
   el.innerHTML = "";
   if (!list.length) { el.style.display="none"; return; }
   el.style.display = "flex";
-
   list.forEach((c,i) => {
     const m = META[c.bucket]||META.never;
     const div = document.createElement("div");
     div.className = "clinic-card";
     div.innerHTML = `
-      <div class="clinic-row" onclick="toggle(${c.idx}, '${esc(c.name)}')">
+      <div class="clinic-row" onclick="toggle(${c.idx},'${esc(c.name).replace(/'/g,"\\'")}')">
         <div class="num">${i+1}</div>
         <div class="badge" style="background:${m.bg};color:${m.color}">${m.label}</div>
         <div class="clinic-info">
@@ -220,31 +286,33 @@ function renderList(filter) {
           ${c.daysSinceLast!=null
             ? `<div class="clinic-days" style="color:${m.color}">${c.daysSinceLast}d ago</div>`
             : `<div class="clinic-days" style="color:#bbb">no orders on record</div>`}
-          ${c.spend>0?`<div class="clinic-ltv">${fmt(c.spend)} LTV</div>`:""}
+          ${c.spend>0?`<div class="clinic-ltv">${fmt(c.spend)} lifetime</div>`:""}
         </div>
         <div class="chevron" id="chev-${c.idx}">▼</div>
       </div>
       <div class="detail" id="detail-${c.idx}">
-        <div class="detail-inner" id="inner-${c.idx}">
-          ${buildDetail(c, m)}
+        <div class="detail-inner">
+          ${buildDetail(c,m)}
         </div>
       </div>`;
     el.appendChild(div);
   });
 }
 
+// ── Detail panel ──────────────────────────────────────────────
 function buildDetail(c, m) {
   const ytdDelta = c.lastYtdSpend > 0 ? ((c.ytdSpend - c.lastYtdSpend)/c.lastYtdSpend*100).toFixed(0) : null;
   const deltaHtml = ytdDelta!==null
     ? `<div class="spend-delta ${ytdDelta>=0?"up":"down"}">${ytdDelta>=0?"▲":"▼"} ${Math.abs(ytdDelta)}% vs last year</div>`
     : `<div class="spend-delta" style="color:#aaa">No prior year data</div>`;
 
+  // Inner tabs
   let html = `
     ${c.repName ? `<div class="rep-badge">Rep: ${esc(c.repName)}</div>` : ""}
     <div class="contact-chips">
       ${c.phone   ? `<span>📞 ${esc(c.phone)}</span>`   : ""}
       ${c.email   ? `<span>✉️ ${esc(c.email)}</span>`   : ""}
-      ${c.address ? `<span>📍 ${esc(c.address)}</span>` : ""}
+      ${c.address ? `<span>📍 ${esc(c.address)}${c.cityStateZip?", "+esc(c.cityStateZip):""}</span>` : ""}
       ${c.lastOrderDate ? `<span>🗓 Last order: ${c.lastOrderDate}</span>` : ""}
     </div>
 
@@ -253,16 +321,26 @@ function buildDetail(c, m) {
       <div class="spend-box"><div class="spend-label">Last Year YTD</div><div class="spend-value">${fmt(c.lastYtdSpend)}</div></div>
       <div class="spend-box"><div class="spend-label">Last 6 Months</div><div class="spend-value">${fmt(c.sixMoSpend)}</div></div>
       <div class="spend-box"><div class="spend-label">Lifetime</div><div class="spend-value">${fmt(c.spend)}</div></div>
-    </div>`;
+    </div>
+
+    <div class="inner-tabs">
+      <button class="itab active" onclick="switchInnerTab(${c.idx},'orders',this)">Orders</button>
+      <button class="itab" onclick="switchInnerTab(${c.idx},'pitch',this)">Pitch</button>
+      <button class="itab" onclick="switchInnerTab(${c.idx},'nearby',this)">Nearby clinics</button>
+      <button class="itab" onclick="switchInnerTab(${c.idx},'invoices',this)">Invoices</button>
+      <button class="itab" onclick="switchInnerTab(${c.idx},'email',this)">Email drafts</button>
+    </div>
+
+    <!-- ORDERS tab -->
+    <div class="itab-content active" id="itab-${c.idx}-orders">`;
 
   // Stopped ordering
   if (c.droppedProducts?.length) {
     html += `<div class="detail-section"><div class="dl">Stopped ordering (${c.droppedProducts.length})</div>
-      <table class="prod-table">
-        <thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>Lost revenue</th></tr></thead><tbody>`;
+      <table class="prod-table"><thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>Lost revenue</th></tr></thead><tbody>`;
     c.droppedProducts.slice(0,8).forEach(p => {
       html += `<tr>
-        <td><div class="prod-name">${esc(p.productName)}</div></td>
+        <td><div class="prod-name">${esc(p.productName)}${p.switched?`<span class="switched-tag">switched</span>`:""}</div></td>
         <td style="color:#888">${p.orderCount}</td>
         <td style="color:#888">${p.lastOrderDate} (${p.daysSince}d)</td>
         <td class="lost">${fmt(p.totalSpend)}</td>
@@ -274,11 +352,10 @@ function buildDetail(c, m) {
   // Still ordering
   if (c.activeProducts?.length) {
     html += `<div class="detail-section"><div class="dl">Still ordering (${c.activeProducts.length})</div>
-      <table class="prod-table">
-        <thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>YTD</th></tr></thead><tbody>`;
+      <table class="prod-table"><thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>YTD</th></tr></thead><tbody>`;
     c.activeProducts.slice(0,6).forEach(p => {
       html += `<tr>
-        <td><div class="prod-name">${esc(p.productName)}</div></td>
+        <td><div class="prod-name">${esc(p.productName)}${p.switched?`<span class="switched-tag">switched</span>`:""}</div></td>
         <td style="color:#888">${p.orderCount}</td>
         <td style="color:#888">${p.lastOrderDate}</td>
         <td class="active-tag">${fmt(p.ytdSpend)}</td>
@@ -287,45 +364,177 @@ function buildDetail(c, m) {
     html += `</tbody></table></div>`;
   }
 
-  // Zoho invoice panel — loads live
-  html += `<div class="detail-section">
-    <div class="dl">Zoho invoice history</div>
+  if (!c.droppedProducts?.length && !c.activeProducts?.length) {
+    html += `<div style="font-size:13px;color:#aaa;padding:12px 0">No order history found.</div>`;
+  }
+
+  html += `</div>`;
+
+  // PITCH tab
+  html += `<div class="itab-content" id="itab-${c.idx}-pitch">`;
+  if (c.pitchProducts?.length) {
+    html += `<div class="dl" style="margin-bottom:8px">Top products this clinic hasn't ordered (by YTD revenue across all clinics)</div>`;
+    c.pitchProducts.forEach(p => {
+      html += `<div class="pitch-item">
+        <div class="pitch-name">${esc(p.productName)}</div>
+        <div class="pitch-rev">${fmt(p.ytdRevenue)} market YTD</div>
+      </div>`;
+    });
+  } else {
+    html += `<div style="font-size:13px;color:#aaa;padding:12px 0">This clinic has ordered all top products.</div>`;
+  }
+  html += `</div>`;
+
+  // NEARBY tab
+  html += `<div class="itab-content" id="itab-${c.idx}-nearby">
+    <div id="nearby-map-${c.idx}" style="height:280px;border-radius:8px;border:1px solid #E8E8E8;margin-bottom:10px;background:#f8f8f8;display:flex;align-items:center;justify-content:center;">
+      <span style="color:#aaa;font-size:13px">Click "Nearby clinics" to load map</span>
+    </div>
+    <div id="nearby-list-${c.idx}" style="font-size:12px;color:#aaa"></div>
+  </div>`;
+
+  // INVOICES tab
+  html += `<div class="itab-content" id="itab-${c.idx}-invoices">
     <div class="invoice-panel" id="inv-${c.idx}">
-      <div class="inv-loading">Loading invoices…</div>
+      <div class="inv-loading">Click "Invoices" to load from Zoho</div>
     </div>
   </div>`;
 
-  // Email drafts
-  html += buildEmailSection(c);
+  // EMAIL tab
+  html += `<div class="itab-content" id="itab-${c.idx}-email">${buildEmailSection(c)}</div>`;
+
+  html += `</div>`; // close detail
 
   return html;
 }
 
-// Load Zoho invoices live from worker
+// ── Inner tab switch ──────────────────────────────────────────
+function switchInnerTab(clinicIdx, tab, btn) {
+  const detail = document.getElementById(`detail-${clinicIdx}`);
+  detail.querySelectorAll(".itab").forEach(b => b.classList.remove("active"));
+  detail.querySelectorAll(".itab-content").forEach(t => t.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById(`itab-${clinicIdx}-${tab}`)?.classList.add("active");
+
+  // Lazy load on tab click
+  if (tab === "invoices") loadInvoices(clinicIdx, allClinics.find(c=>c.idx===clinicIdx)?.name || "");
+  if (tab === "nearby")   loadNearbyMap(clinicIdx);
+}
+
+// ── Geocode helper ────────────────────────────────────────────
+async function getCoords(address, cityStateZip) {
+  const key = `${address}|${cityStateZip}`;
+  if (geocodeCache[key] !== undefined) return geocodeCache[key];
+  try {
+    const res = await fetch(`${WORKER}/geocode?address=${encodeURIComponent(address)}&city=${encodeURIComponent(cityStateZip)}`);
+    const data = await res.json();
+    geocodeCache[key] = data.coords || null;
+    return geocodeCache[key];
+  } catch { geocodeCache[key] = null; return null; }
+}
+
+// ── Main map ──────────────────────────────────────────────────
+async function initMainMap() {
+  mainMapInited = true;
+  mainMap = L.map("main-map").setView([39.5, -98.35], 4);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors", maxZoom: 18
+  }).addTo(mainMap);
+
+  // Geocode and plot each clinic (throttled)
+  for (const c of allClinics) {
+    const coords = await getCoords(c.address, c.cityStateZip);
+    if (!coords) continue;
+    const m = META[c.bucket] || META.never;
+    const marker = L.circleMarker([coords.lat, coords.lng], {
+      radius: 7, fillColor: m.color, color: "#fff", weight: 1.5, fillOpacity: 0.85
+    }).addTo(mainMap);
+    marker.bindPopup(`<strong>${c.name}</strong><br>${m.label}<br>${c.daysSinceLast!=null?c.daysSinceLast+"d ago":"no orders"}`);
+    await new Promise(r => setTimeout(r, 200)); // rate limit Nominatim
+  }
+}
+
+// ── Nearby map ────────────────────────────────────────────────
+async function loadNearbyMap(clinicIdx) {
+  const clinic = allClinics.find(c => c.idx === clinicIdx);
+  if (!clinic) return;
+
+  const container = document.getElementById(`nearby-map-${clinicIdx}`);
+  const listEl    = document.getElementById(`nearby-list-${clinicIdx}`);
+  container.innerHTML = `<span style="color:#aaa;font-size:13px">Geocoding…</span>`;
+
+  const coords = await getCoords(clinic.address, clinic.cityStateZip);
+  if (!coords) {
+    container.innerHTML = `<span style="color:#aaa;font-size:13px">Could not geocode this clinic's address</span>`;
+    return;
+  }
+
+  // Init map
+  container.innerHTML = "";
+  container.style.display = "block";
+  const map = L.map(container).setView([coords.lat, coords.lng], 10);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: "© OpenStreetMap contributors"
+  }).addTo(map);
+
+  // This clinic marker
+  L.circleMarker([coords.lat, coords.lng], {
+    radius: 9, fillColor: "#111", color: "#fff", weight: 2, fillOpacity: 1
+  }).addTo(map).bindPopup(`<strong>${clinic.name}</strong><br>(This clinic)`).openPopup();
+
+  // Find nearby clinics by matching state from cityStateZip
+  const stateMatch = (clinic.cityStateZip || "").match(/\b([A-Z]{2})\b/);
+  const clinicState = stateMatch ? stateMatch[1] : "";
+  const nearby = allClinics.filter(c => {
+    if (c.idx === clinic.idx) return false;
+    const s = (c.cityStateZip || "").match(/\b([A-Z]{2})\b/)?.[1] || "";
+    return s && s === clinicState;
+  }).slice(0, 15);
+
+  listEl.innerHTML = nearby.length
+    ? `<div style="margin-bottom:6px;color:#555">${nearby.length} other clinics in today's list in same state:</div>`
+    : `<div style="color:#aaa">No other clinics in same state in today's list.</div>`;
+
+  for (const nc of nearby) {
+    const nc2 = await getCoords(nc.address, nc.cityStateZip);
+    if (!nc2) { await new Promise(r => setTimeout(r, 150)); continue; }
+    const m = META[nc.bucket] || META.never;
+    L.circleMarker([nc2.lat, nc2.lng], {
+      radius: 6, fillColor: m.color, color: "#fff", weight: 1.5, fillOpacity: 0.8
+    }).addTo(map).bindPopup(`<strong>${nc.name}</strong><br>${m.label}`);
+    listEl.innerHTML += `<div style="padding:3px 0;border-bottom:1px solid #F5F5F5;font-size:12px">
+      <span style="color:${m.color};font-weight:600">●</span> ${esc(nc.name)} · ${nc.daysSinceLast!=null?nc.daysSinceLast+"d ago":"no orders"}
+    </div>`;
+    await new Promise(r => setTimeout(r, 200));
+  }
+}
+
+// ── Load Zoho invoices ────────────────────────────────────────
 async function loadInvoices(clinicIdx, clinicName) {
   const panel = document.getElementById(`inv-${clinicIdx}`);
-  if (!panel) return;
+  if (!panel || panel.dataset.loaded) return;
+  panel.dataset.loaded = "1";
+  panel.innerHTML = `<div class="inv-loading">Loading from Zoho…</div>`;
   try {
     const res = await fetch(`${WORKER}/clinic-detail?name=${encodeURIComponent(clinicName)}&t=${Date.now()}`);
     const data = await res.json();
     if (data.error) throw new Error(data.error);
     const invoices = data.invoices || [];
     if (!invoices.length) {
-      panel.innerHTML = `<div class="inv-loading">No open/overdue invoices found in Zoho.</div>`;
+      panel.innerHTML = `<div class="inv-loading">No open/overdue invoices found in Zoho for this clinic.</div>`;
       return;
     }
     panel.innerHTML = invoices.slice(0,10).map(inv => {
       const statusClass = inv.status === "paid" ? "inv-paid" : inv.status === "overdue" ? "inv-overdue" : "inv-open";
-      const statusLabel = inv.status.charAt(0).toUpperCase() + inv.status.slice(1);
       return `<div class="invoice-row">
         <span class="inv-num">${esc(inv.invoice_number)}</span>
         <span class="inv-date">${esc(inv.invoice_date)}</span>
-        <span class="inv-status ${statusClass}">${statusLabel}</span>
+        <span class="inv-status ${statusClass}">${inv.status}</span>
         <span class="inv-amount">${fmt(inv.total)}</span>
       </div>`;
     }).join("");
   } catch(e) {
-    panel.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed to load invoices: ${esc(e.message)}</div>`;
+    panel.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`;
   }
 }
 
@@ -342,106 +551,92 @@ function buildEmailSection(c) {
   };
 
   let html = `<div class="email-section">
-    <div class="dl" style="margin-bottom:10px">Draft emails</div>
     <div class="email-tabs">
-      <button class="etab active" onclick="switchTab(${c.idx},'a',this)">Win-back</button>
-      <button class="etab" onclick="switchTab(${c.idx},'b',this)">Check-in</button>
-      <button class="etab" onclick="switchTab(${c.idx},'c',this)">Product drop</button>
+      <button class="etab active" onclick="switchEmailTab(${c.idx},'a',this)">Win-back</button>
+      <button class="etab" onclick="switchEmailTab(${c.idx},'b',this)">Check-in</button>
+      <button class="etab" onclick="switchEmailTab(${c.idx},'c',this)">Product drop</button>
     </div>`;
 
-  ["a","b","c"].forEach((key, ki) => {
+  ["a","b","c"].forEach(key => {
     const email = emails[key];
     html += `<div id="email-${c.idx}-${key}" style="display:${key==="a"?"block":"none"}">
       <div class="email-subject">Subject: ${esc(email.subject)}</div>
       <div class="email-body" id="body-${c.idx}-${key}">${esc(email.body)}</div>
-      <button class="copy-btn" onclick="copyEmail(${c.idx},'${key}','${esc(email.subject).replace(/'/g,"\\'")}')">📋 Copy</button>
+      <button class="copy-btn" onclick="copyEmail(${c.idx},'${key}')">📋 Copy</button>
     </div>`;
   });
 
-  html += `</div>`;
-  return html;
+  return html + `</div>`;
 }
 
 function buildEmailA(c, first, topDrop) {
-  // JP's casual win-back tone
-  const subject = `Quick question — what happened?`;
-  const body = `Hey ${first},
+  return {
+    subject: `Quick question`,
+    body: `Hey ${first},
 
-Quick question, what happened? Looking through old records I can see your clinic ${c.everOrdered ? `ordered ${topDrop ? topDrop.productName.split(" ").slice(0,3).join(" ") : "compounded medications"} from us in the past` : "set up an account with us"} but haven't ordered${topDrop ? " that" : ""} in some time — which makes me think one of three things:
+Quick question, what happened? Looking through old records I can see your clinic ordered ${topDrop ? topDrop.productName.split(" ").slice(0,3).join(" ") : "a few compounded medications"} from us in the past but haven't ordered again in some time which makes me think one of three things, pricing was too high, you didn't like your sales rep, or you've hit the lottery and retired :)
 
-1. Pricing was too high
-2. You didn't like your sales rep
-3. You've hit the lottery and retired 🙂
-
-Hoping it's the 3rd option but would love the opportunity to learn what happened. Either way no hard feelings — just want to make sure we didn't drop the ball somewhere.
+Hoping it's the 3rd option but would love the opportunity to learn what happened.
 
 JP
 PetScript Pharmacy
-jp@petscript.net`;
-  return { subject, body };
+jp@petscript.net`
+  };
 }
 
 function buildEmailB(c, first, topDrop, topActive) {
-  const subject = `Checking in — ${c.name}`;
   let body = `Hey ${first},\n\nJust checking in — it's been ${c.daysSinceLast != null ? c.daysSinceLast + " days" : "a while"} since your last order with us.`;
-  if (topActive) body += ` Glad to see you're still ordering ${topActive.productName.split(" ").slice(0,3).join(" ")}.`;
-  if (topDrop) body += `\n\nNoticed you stopped ordering ${topDrop.productName.split(" ").slice(0,3).join(" ")} — did you find another source, or is there something I can do on pricing or formulation?`;
-  body += `\n\nEither way, just wanted to make sure you're taken care of.\n\nJP\nPetScript Pharmacy\njp@petscript.net`;
-  return { subject, body };
+  if (topActive) body += ` Good to see you're still ordering ${topActive.productName.split(" ").slice(0,3).join(" ")}.`;
+  if (topDrop) body += `\n\nNoticed you stopped ordering ${topDrop.productName.split(" ").slice(0,3).join(" ")} — did you find another source, or is there something I can do on pricing?`;
+  body += `\n\nEither way no pressure, just want to make sure we're taking care of you.\n\nJP\nPetScript Pharmacy\njp@petscript.net`;
+  return { subject: `Checking in`, body };
 }
 
 function buildEmailC(c, first, topDrop) {
   const prod = topDrop ? topDrop.productName.split(" ").slice(0,4).join(" ") : "one of your medications";
-  const subject = `Still ordering ${prod}?`;
-  const body = `Hey ${first},
+  return {
+    subject: `Still ordering ${prod}?`,
+    body: `Hey ${first},
 
 Saw it's been ${topDrop ? topDrop.daysSince + " days" : "a while"} since your last order of ${prod}. Are you still stocking it?
 
-If pricing or turnaround was the issue I can fix it. If you switched sources I'd love to know why — always trying to get better.
-
-Worth a 2-minute conversation?
+If pricing was the issue I can fix it. If you found a better source I'd love to know why.
 
 JP
 PetScript Pharmacy
-jp@petscript.net`;
-  return { subject, body };
+jp@petscript.net`
+  };
 }
 
-function switchTab(idx, tab, btn) {
-  const panel = document.getElementById(`detail-${idx}`);
-  panel.querySelectorAll(".etab").forEach(b => b.classList.remove("active"));
+function switchEmailTab(idx, tab, btn) {
+  const section = document.getElementById(`itab-${idx}-email`);
+  section.querySelectorAll(".etab").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
   ["a","b","c"].forEach(k => {
     const el = document.getElementById(`email-${idx}-${k}`);
-    if (el) el.style.display = k===tab ? "block" : "none";
+    if (el) el.style.display = k===tab?"block":"none";
   });
 }
 
-function copyEmail(idx, tab, subject) {
+function copyEmail(idx, tab) {
+  const subjectEl = document.querySelector(`#itab-${idx}-email .email-subject`);
   const body = document.getElementById(`body-${idx}-${tab}`)?.textContent || "";
+  const subject = subjectEl?.textContent?.replace("Subject: ","") || "";
   navigator.clipboard.writeText(`Subject: ${subject}\n\n${body}`)
-    .then(() => alert("Copied!"))
-    .catch(() => alert("Copy manually from the box above."));
+    .then(() => alert("Copied!")).catch(() => alert("Copy manually from the box above."));
 }
 
 function toggle(idx, name) {
   const detail = document.getElementById(`detail-${idx}`);
   const chev   = document.getElementById(`chev-${idx}`);
   const isOpen = detail.classList.contains("open");
-
   document.querySelectorAll(".detail.open").forEach(d => {
     d.classList.remove("open");
     const id = d.id.replace("detail-","");
-    const c = document.getElementById(`chev-${id}`);
-    if (c) c.textContent = "▼";
+    const ch = document.getElementById(`chev-${id}`);
+    if (ch) ch.textContent = "▼";
   });
-
-  if (!isOpen) {
-    detail.classList.add("open");
-    chev.textContent = "▲";
-    // Load Zoho invoices live
-    loadInvoices(idx, name);
-  }
+  if (!isOpen) { detail.classList.add("open"); chev.textContent = "▲"; }
 }
 
 function show(s) {
