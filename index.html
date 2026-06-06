@@ -26,7 +26,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .card-value { font-size: 24px; font-weight: 700; line-height: 1.1; }
 .card-sub { font-size: 10px; color: #aaa; margin-top: 3px; }
 
-.filters { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.filters { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
 .pill { font-size: 12px; padding: 5px 12px; border-radius: 20px; border: none; cursor: pointer; background: #E8E8E8; color: #555; }
 .pill.active { background: #111; color: #fff; font-weight: 600; }
 
@@ -45,41 +45,45 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .clinic-ltv { font-size: 10px; color: #aaa; }
 .chevron { font-size: 10px; color: #ccc; flex-shrink: 0; }
 
-/* Detail panel */
 .detail { display: none; border-top: 1px solid #F0F0F0; }
 .detail.open { display: block; }
 .detail-inner { padding: 16px; background: #FAFAFA; }
 
-.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
-.detail-section { margin-bottom: 14px; }
 .dl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: #aaa; margin-bottom: 6px; font-weight: 600; }
 
-/* Spend bar */
-.spend-row { display: flex; gap: 10px; margin-bottom: 14px; }
+.rep-badge { display: inline-block; font-size: 11px; background: #EEF2FF; color: #3730A3; padding: 2px 8px; border-radius: 6px; font-weight: 500; margin-bottom: 10px; }
+
+.contact-chips { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: #666; margin-bottom: 14px; }
+
+.spend-row { display: flex; gap: 8px; margin-bottom: 14px; }
 .spend-box { flex: 1; background: #fff; border: 1px solid #E8E8E8; border-radius: 8px; padding: 10px 12px; text-align: center; }
 .spend-label { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
-.spend-value { font-size: 16px; font-weight: 700; color: #111; }
+.spend-value { font-size: 15px; font-weight: 700; color: #111; }
 .spend-delta { font-size: 11px; margin-top: 2px; }
 .up { color: #1D9E75; } .down { color: #C0392B; }
 
-/* Product tables */
-.prod-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.prod-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 14px; }
 .prod-table th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; padding: 0 0 6px; border-bottom: 1px solid #EEE; }
 .prod-table td { padding: 7px 0; border-bottom: 1px solid #F5F5F5; vertical-align: top; }
 .prod-table td:last-child { text-align: right; white-space: nowrap; }
 .prod-name { font-weight: 500; color: #111; line-height: 1.4; }
-.prod-meta { font-size: 11px; color: #888; margin-top: 1px; }
 .lost { color: #C0392B; font-weight: 600; }
 .active-tag { color: #1D9E75; font-weight: 600; }
 
-/* Contact info */
-.contact-chips { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: #666; margin-bottom: 14px; }
-.contact-chips span { display: flex; align-items: center; gap: 4px; }
+/* Zoho invoice panel */
+.invoice-panel { background: #fff; border: 1px solid #E8E8E8; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; }
+.invoice-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid #F5F5F5; font-size: 12px; }
+.invoice-row:last-child { border-bottom: none; }
+.inv-num { font-weight: 600; color: #111; min-width: 90px; }
+.inv-date { color: #888; min-width: 90px; }
+.inv-status { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 600; }
+.inv-paid { background: #E1F5EE; color: #085041; }
+.inv-open { background: #E8F0FD; color: #1A5CA8; }
+.inv-overdue { background: #FDECEA; color: #C0392B; }
+.inv-amount { margin-left: auto; font-weight: 600; }
+.inv-loading { font-size: 12px; color: #aaa; padding: 8px 0; }
 
-/* Rep badge */
-.rep-badge { display: inline-block; font-size: 11px; background: #EEF2FF; color: #3730A3; padding: 2px 8px; border-radius: 6px; font-weight: 500; margin-bottom: 10px; }
-
-/* Email draft */
+/* Email section */
 .email-section { background: #fff; border: 1px solid #E8E8E8; border-radius: 8px; padding: 14px; margin-top: 14px; }
 .email-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
 .etab { font-size: 11px; padding: 4px 10px; border-radius: 6px; border: 1px solid #E0E0E0; cursor: pointer; background: #fff; }
@@ -87,18 +91,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .email-subject { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 8px; }
 .email-body { font-size: 13px; color: #333; white-space: pre-wrap; line-height: 1.7; background: #FAFAFA; border-radius: 6px; padding: 12px; border: 1px solid #F0F0F0; }
 .copy-btn { margin-top: 10px; font-size: 11px; padding: 5px 12px; cursor: pointer; border-radius: 6px; border: 1px solid #D0D0D0; background: #fff; }
-.copy-btn:hover { background: #F5F5F5; }
 
-/* Loading / error */
 .loading { text-align: center; padding: 4rem; color: #999; font-size: 14px; }
 .error-box { background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 10px; padding: 16px; color: #991B1B; font-size: 13px; }
 .footer { text-align: center; font-size: 11px; color: #ccc; margin-top: 20px; padding-bottom: 40px; }
-
-@media (max-width: 640px) {
-  .cards { grid-template-columns: repeat(3, 1fr); }
-  .detail-grid { grid-template-columns: 1fr; }
-  .spend-row { flex-wrap: wrap; }
-}
+.detail-section { margin-bottom: 14px; }
 </style>
 </head>
 <body>
@@ -115,7 +112,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 </div>
 
 <div class="main">
-
   <div class="cards" id="cards" style="display:none">
     <div class="card"><div class="card-label">Total today</div><div class="card-value" id="cTotal">—</div><div class="card-sub" id="cPool"></div></div>
     <div class="card"><div class="card-label">Never ordered</div><div class="card-value" style="color:#C0392B" id="cNever">—</div><div class="card-sub">priority 1</div></div>
@@ -132,9 +128,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
     <button class="pill" onclick="setFilter('dropped')" data-f="dropped">Dropped SKU</button>
   </div>
 
-  <div id="stateLoading" class="loading">Loading clinic data…<br><small style="color:#bbb;font-size:12px;display:block;margin-top:8px">Parsing data server-side, takes a few seconds</small></div>
+  <div id="stateLoading" class="loading">Loading clinic data…<br><small style="color:#bbb;font-size:12px;display:block;margin-top:8px">Parsing data server-side</small></div>
   <div id="stateError" class="error-box" style="display:none"><strong>Error:</strong> <span id="errMsg"></span><br><button class="btn btn-outline" style="margin-top:10px" onclick="load()">Retry</button></div>
-
   <div class="list" id="clinicList" style="display:none"></div>
   <div class="footer" id="footer"></div>
 </div>
@@ -208,12 +203,13 @@ function renderList(filter) {
   el.innerHTML = "";
   if (!list.length) { el.style.display="none"; return; }
   el.style.display = "flex";
+
   list.forEach((c,i) => {
     const m = META[c.bucket]||META.never;
     const div = document.createElement("div");
     div.className = "clinic-card";
     div.innerHTML = `
-      <div class="clinic-row" onclick="toggle(${c.idx})">
+      <div class="clinic-row" onclick="toggle(${c.idx}, '${esc(c.name)}')">
         <div class="num">${i+1}</div>
         <div class="badge" style="background:${m.bg};color:${m.color}">${m.label}</div>
         <div class="clinic-info">
@@ -223,14 +219,14 @@ function renderList(filter) {
         <div class="clinic-right">
           ${c.daysSinceLast!=null
             ? `<div class="clinic-days" style="color:${m.color}">${c.daysSinceLast}d ago</div>`
-            : `<div class="clinic-days" style="color:#bbb">no orders</div>`}
+            : `<div class="clinic-days" style="color:#bbb">no orders on record</div>`}
           ${c.spend>0?`<div class="clinic-ltv">${fmt(c.spend)} LTV</div>`:""}
         </div>
         <div class="chevron" id="chev-${c.idx}">▼</div>
       </div>
       <div class="detail" id="detail-${c.idx}">
-        <div class="detail-inner">
-          ${buildDetail(c,m)}
+        <div class="detail-inner" id="inner-${c.idx}">
+          ${buildDetail(c, m)}
         </div>
       </div>`;
     el.appendChild(div);
@@ -245,7 +241,6 @@ function buildDetail(c, m) {
 
   let html = `
     ${c.repName ? `<div class="rep-badge">Rep: ${esc(c.repName)}</div>` : ""}
-
     <div class="contact-chips">
       ${c.phone   ? `<span>📞 ${esc(c.phone)}</span>`   : ""}
       ${c.email   ? `<span>✉️ ${esc(c.email)}</span>`   : ""}
@@ -254,50 +249,51 @@ function buildDetail(c, m) {
     </div>
 
     <div class="spend-row">
-      <div class="spend-box"><div class="spend-label">YTD Spend</div><div class="spend-value">${fmt(c.ytdSpend)}</div>${deltaHtml}</div>
+      <div class="spend-box"><div class="spend-label">YTD</div><div class="spend-value">${fmt(c.ytdSpend)}</div>${deltaHtml}</div>
       <div class="spend-box"><div class="spend-label">Last Year YTD</div><div class="spend-value">${fmt(c.lastYtdSpend)}</div></div>
       <div class="spend-box"><div class="spend-label">Last 6 Months</div><div class="spend-value">${fmt(c.sixMoSpend)}</div></div>
       <div class="spend-box"><div class="spend-label">Lifetime</div><div class="spend-value">${fmt(c.spend)}</div></div>
     </div>`;
 
-  // Why here
-  html += `<div class="detail-section"><div class="dl">Why they're here</div>
-    <div style="font-size:13px;color:#444;background:#fff;border:1px solid #EEE;border-radius:8px;padding:10px 12px;line-height:1.6">${buildReason(c)}</div>
-  </div>`;
-
-  // Dropped products
+  // Stopped ordering
   if (c.droppedProducts?.length) {
-    html += `<div class="detail-section"><div class="dl">Stopped ordering (${c.droppedProducts.length} products)</div>
+    html += `<div class="detail-section"><div class="dl">Stopped ordering (${c.droppedProducts.length})</div>
       <table class="prod-table">
-        <thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>Lost revenue</th></tr></thead>
-        <tbody>`;
+        <thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>Lost revenue</th></tr></thead><tbody>`;
     c.droppedProducts.slice(0,8).forEach(p => {
       html += `<tr>
         <td><div class="prod-name">${esc(p.productName)}</div></td>
         <td style="color:#888">${p.orderCount}</td>
-        <td style="color:#888;white-space:nowrap">${p.lastOrderDate} (${p.daysSince}d ago)</td>
+        <td style="color:#888">${p.lastOrderDate} (${p.daysSince}d)</td>
         <td class="lost">${fmt(p.totalSpend)}</td>
       </tr>`;
     });
     html += `</tbody></table></div>`;
   }
 
-  // Active products
+  // Still ordering
   if (c.activeProducts?.length) {
-    html += `<div class="detail-section"><div class="dl">Still ordering (${c.activeProducts.length} products)</div>
+    html += `<div class="detail-section"><div class="dl">Still ordering (${c.activeProducts.length})</div>
       <table class="prod-table">
-        <thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>YTD spend</th></tr></thead>
-        <tbody>`;
+        <thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>YTD</th></tr></thead><tbody>`;
     c.activeProducts.slice(0,6).forEach(p => {
       html += `<tr>
         <td><div class="prod-name">${esc(p.productName)}</div></td>
         <td style="color:#888">${p.orderCount}</td>
-        <td style="color:#888;white-space:nowrap">${p.lastOrderDate}</td>
+        <td style="color:#888">${p.lastOrderDate}</td>
         <td class="active-tag">${fmt(p.ytdSpend)}</td>
       </tr>`;
     });
     html += `</tbody></table></div>`;
   }
+
+  // Zoho invoice panel — loads live
+  html += `<div class="detail-section">
+    <div class="dl">Zoho invoice history</div>
+    <div class="invoice-panel" id="inv-${c.idx}">
+      <div class="inv-loading">Loading invoices…</div>
+    </div>
+  </div>`;
 
   // Email drafts
   html += buildEmailSection(c);
@@ -305,52 +301,60 @@ function buildDetail(c, m) {
   return html;
 }
 
-function buildReason(c) {
-  if (c.bucket==="never") return "In your system but has never placed a compounding order with PetScript.";
-  if (c.bucket==="dark")  return `Last order <strong>${c.daysSinceLast} days ago</strong> (${c.lastOrderDate}). Lifetime value: ${fmt(c.spend)}. Has completely stopped ordering.`;
-  if (c.bucket==="lapsed") return `Last order <strong>${c.daysSinceLast} days ago</strong> (${c.lastOrderDate}). Ordering cadence has stalled. ${fmt(c.sixMoSpend)} in last 6 months vs ${fmt(c.lastYtdSpend)} last year YTD.`;
-  if (c.bucket==="dropped") {
-    const top = c.droppedProducts?.[0];
-    return top ? `Still ordering overall but dropped <strong>${esc(top.productName)}</strong> ${top.daysSince} days ago — ${fmt(top.totalSpend)} in lost revenue.` : "Still ordering but has dropped specific products they previously ordered.";
+// Load Zoho invoices live from worker
+async function loadInvoices(clinicIdx, clinicName) {
+  const panel = document.getElementById(`inv-${clinicIdx}`);
+  if (!panel) return;
+  try {
+    const res = await fetch(`${WORKER}/clinic-detail?name=${encodeURIComponent(clinicName)}&t=${Date.now()}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    const invoices = data.invoices || [];
+    if (!invoices.length) {
+      panel.innerHTML = `<div class="inv-loading">No open/overdue invoices found in Zoho.</div>`;
+      return;
+    }
+    panel.innerHTML = invoices.slice(0,10).map(inv => {
+      const statusClass = inv.status === "paid" ? "inv-paid" : inv.status === "overdue" ? "inv-overdue" : "inv-open";
+      const statusLabel = inv.status.charAt(0).toUpperCase() + inv.status.slice(1);
+      return `<div class="invoice-row">
+        <span class="inv-num">${esc(inv.invoice_number)}</span>
+        <span class="inv-date">${esc(inv.invoice_date)}</span>
+        <span class="inv-status ${statusClass}">${statusLabel}</span>
+        <span class="inv-amount">${fmt(inv.total)}</span>
+      </div>`;
+    }).join("");
+  } catch(e) {
+    panel.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed to load invoices: ${esc(e.message)}</div>`;
   }
-  return "";
 }
 
+// ── Email drafts ──────────────────────────────────────────────
 function buildEmailSection(c) {
   const first = (c.contact||"there").split(" ")[0];
-  const topDropped = c.droppedProducts?.[0];
+  const topDrop = c.droppedProducts?.[0];
+  const topActive = c.activeProducts?.[0];
 
   const emails = {
-    a: {
-      label: "Check-in A",
-      subject: `${c.name} — quick check-in`,
-      body: buildEmailA(c, first, topDropped),
-    },
-    b: {
-      label: "Check-in B",
-      subject: `Still compounding ${topDropped ? topDropped.productName.split(" ").slice(0,3).join(" ")+"?" : "with us?"}`,
-      body: buildEmailB(c, first, topDropped),
-    },
-    c: {
-      label: "Win-back",
-      subject: `We want your business back — ${c.name}`,
-      body: buildEmailC(c, first, topDropped),
-    },
+    a: buildEmailA(c, first, topDrop),
+    b: buildEmailB(c, first, topDrop, topActive),
+    c: buildEmailC(c, first, topDrop),
   };
 
   let html = `<div class="email-section">
     <div class="dl" style="margin-bottom:10px">Draft emails</div>
     <div class="email-tabs">
-      <button class="etab active" onclick="switchTab('${c.idx}','a',this)">Check-in A</button>
-      <button class="etab" onclick="switchTab('${c.idx}','b',this)">Check-in B</button>
-      <button class="etab" onclick="switchTab('${c.idx}','c',this)">Win-back</button>
+      <button class="etab active" onclick="switchTab(${c.idx},'a',this)">Win-back</button>
+      <button class="etab" onclick="switchTab(${c.idx},'b',this)">Check-in</button>
+      <button class="etab" onclick="switchTab(${c.idx},'c',this)">Product drop</button>
     </div>`;
 
-  Object.entries(emails).forEach(([key, email]) => {
+  ["a","b","c"].forEach((key, ki) => {
+    const email = emails[key];
     html += `<div id="email-${c.idx}-${key}" style="display:${key==="a"?"block":"none"}">
       <div class="email-subject">Subject: ${esc(email.subject)}</div>
       <div class="email-body" id="body-${c.idx}-${key}">${esc(email.body)}</div>
-      <button class="copy-btn" onclick="copyEmail('${c.idx}','${key}','${esc(email.subject)}')">📋 Copy email</button>
+      <button class="copy-btn" onclick="copyEmail(${c.idx},'${key}','${esc(email.subject).replace(/'/g,"\\'")}')">📋 Copy</button>
     </div>`;
   });
 
@@ -358,73 +362,86 @@ function buildEmailSection(c) {
   return html;
 }
 
-function buildEmailA(c, first, top) {
-  const lines = [`Hey ${first},`,""];
-  if (c.bucket==="never") {
-    lines.push("You're set up with PetScript but we haven't filled anything for you yet — wanted to make sure nothing fell through the cracks.");
-    lines.push("","What are you currently sourcing for compounded medications? I can usually turn around pricing same day.");
-  } else if (c.bucket==="dark" || c.bucket==="lapsed") {
-    lines.push(`It's been ${c.daysSinceLast} days since your last order — just checking in to make sure everything is good on your end.`);
-    lines.push("","Did something change, or can I help get you resupplied?");
-  } else if (top) {
-    lines.push(`Noticed it's been ${top.daysSince} days since your last order of ${top.productName}.`);
-    lines.push("","Did you find another source, or is there something I can do on pricing or formulation?");
-  }
-  lines.push("","JP","PetScript Pharmacy","jp@petscript.net");
-  return lines.join("\n");
+function buildEmailA(c, first, topDrop) {
+  // JP's casual win-back tone
+  const subject = `Quick question — what happened?`;
+  const body = `Hey ${first},
+
+Quick question, what happened? Looking through old records I can see your clinic ${c.everOrdered ? `ordered ${topDrop ? topDrop.productName.split(" ").slice(0,3).join(" ") : "compounded medications"} from us in the past` : "set up an account with us"} but haven't ordered${topDrop ? " that" : ""} in some time — which makes me think one of three things:
+
+1. Pricing was too high
+2. You didn't like your sales rep
+3. You've hit the lottery and retired 🙂
+
+Hoping it's the 3rd option but would love the opportunity to learn what happened. Either way no hard feelings — just want to make sure we didn't drop the ball somewhere.
+
+JP
+PetScript Pharmacy
+jp@petscript.net`;
+  return { subject, body };
 }
 
-function buildEmailB(c, first, top) {
-  const lines = [`Hey ${first},`,""];
-  if (c.bucket==="never") {
-    lines.push("Quick question — what compounded medications are you ordering most right now?");
-    lines.push("","I'd love to send over pricing. We typically ship same or next day and I can usually beat what you're paying elsewhere.");
-  } else if (top) {
-    lines.push(`Saw you've been ordering ${top.productName} in the past (${top.orderCount} orders). Haven't seen a recent order — are you still stocking it?`);
-    lines.push("","Happy to lock in pricing or adjust the formulation if needed.");
-  } else {
-    lines.push(`Wanted to touch base — it's been ${c.daysSinceLast} days since your last order. Are you still compounding with us?`);
-    lines.push("","Let me know what you're running low on and I'll get it moving.");
-  }
-  lines.push("","JP","PetScript Pharmacy");
-  return lines.join("\n");
+function buildEmailB(c, first, topDrop, topActive) {
+  const subject = `Checking in — ${c.name}`;
+  let body = `Hey ${first},\n\nJust checking in — it's been ${c.daysSinceLast != null ? c.daysSinceLast + " days" : "a while"} since your last order with us.`;
+  if (topActive) body += ` Glad to see you're still ordering ${topActive.productName.split(" ").slice(0,3).join(" ")}.`;
+  if (topDrop) body += `\n\nNoticed you stopped ordering ${topDrop.productName.split(" ").slice(0,3).join(" ")} — did you find another source, or is there something I can do on pricing or formulation?`;
+  body += `\n\nEither way, just wanted to make sure you're taken care of.\n\nJP\nPetScript Pharmacy\njp@petscript.net`;
+  return { subject, body };
 }
 
-function buildEmailC(c, first, top) {
-  const lines = [`Hey ${first},`,""];
-  lines.push(`I noticed your orders from PetScript have slowed down${top ? ` — specifically ${top.productName}` : ""}. I wanted to reach out personally.`);
-  lines.push("","If pricing, turnaround, or formulation is the issue I can fix it. We've been compounding for over 20 years and I'd rather earn your business back than lose it.");
-  lines.push("","Can we get on a quick call this week?");
-  lines.push("","JP","PetScript Pharmacy","jp@petscript.net | 501-555-0100");
-  return lines.join("\n");
+function buildEmailC(c, first, topDrop) {
+  const prod = topDrop ? topDrop.productName.split(" ").slice(0,4).join(" ") : "one of your medications";
+  const subject = `Still ordering ${prod}?`;
+  const body = `Hey ${first},
+
+Saw it's been ${topDrop ? topDrop.daysSince + " days" : "a while"} since your last order of ${prod}. Are you still stocking it?
+
+If pricing or turnaround was the issue I can fix it. If you switched sources I'd love to know why — always trying to get better.
+
+Worth a 2-minute conversation?
+
+JP
+PetScript Pharmacy
+jp@petscript.net`;
+  return { subject, body };
 }
 
-function switchTab(clinicIdx, tab, btn) {
-  const panel = document.getElementById(`detail-${clinicIdx}`);
+function switchTab(idx, tab, btn) {
+  const panel = document.getElementById(`detail-${idx}`);
   panel.querySelectorAll(".etab").forEach(b => b.classList.remove("active"));
   btn.classList.add("active");
   ["a","b","c"].forEach(k => {
-    const el = document.getElementById(`email-${clinicIdx}-${k}`);
+    const el = document.getElementById(`email-${idx}-${k}`);
     if (el) el.style.display = k===tab ? "block" : "none";
   });
 }
 
-function copyEmail(clinicIdx, tab, subject) {
-  const body = document.getElementById(`body-${clinicIdx}-${tab}`)?.textContent || "";
-  const full = `Subject: ${subject}\n\n${body}`;
-  navigator.clipboard.writeText(full).then(() => alert("Copied to clipboard!")).catch(() => alert("Select and copy manually."));
+function copyEmail(idx, tab, subject) {
+  const body = document.getElementById(`body-${idx}-${tab}`)?.textContent || "";
+  navigator.clipboard.writeText(`Subject: ${subject}\n\n${body}`)
+    .then(() => alert("Copied!"))
+    .catch(() => alert("Copy manually from the box above."));
 }
 
-function toggle(idx) {
+function toggle(idx, name) {
   const detail = document.getElementById(`detail-${idx}`);
   const chev   = document.getElementById(`chev-${idx}`);
   const isOpen = detail.classList.contains("open");
+
   document.querySelectorAll(".detail.open").forEach(d => {
     d.classList.remove("open");
-    const c = document.getElementById(`chev-${d.id.replace("detail-","")}`);
+    const id = d.id.replace("detail-","");
+    const c = document.getElementById(`chev-${id}`);
     if (c) c.textContent = "▼";
   });
-  if (!isOpen) { detail.classList.add("open"); chev.textContent = "▲"; }
+
+  if (!isOpen) {
+    detail.classList.add("open");
+    chev.textContent = "▲";
+    // Load Zoho invoices live
+    loadInvoices(idx, name);
+  }
 }
 
 function show(s) {
