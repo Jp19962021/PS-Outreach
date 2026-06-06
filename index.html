@@ -206,7 +206,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 </div>
 
 <script>
-const WORKER = "https://fragrant-cloud-6ef2.jp-d4e.workers.dev";
+const WORKER = "https://50clinicoutreach.jp-d4e.workers.dev";
 const META = {
   never:   { label:"Never ordered",  color:"#C0392B", bg:"#FDECEA" },
   dark:    { label:"Gone dark 90d+", color:"#B7770D", bg:"#FEF3CD" },
@@ -308,25 +308,25 @@ function applySearch(q) {
   }
   searchTimer = setTimeout(async () => {
     try {
-      const res = await fetch(`${WORKER}/ai-chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ tool: "search_clinics", args: { name_query: searchQuery, limit: 50 } })
-      });
+      const res = await fetch(`${WORKER}/search?q=${encodeURIComponent(searchQuery)}`);
       const data = await res.json();
-      const raw = data.result?.results || [];
-      searchResults = raw.map(c => ({
-        name: c.clinic,
-        email: c.email || "",
-        phone: c.phone || "",
-        contact: c.doctor || "",
-        address: "",
-        cityStateZip: c.state || "",
-        repName: c.rep || "",
-        lastOrderDate: c.last_order_date || null,
-        daysSinceLast: c.days_since_last_order,
-        bucket: !c.last_order_date ? "never" : c.days_since_last_order >= 90 ? "dark" : c.days_since_last_order >= 45 ? "lapsed" : "active",
-        spend: 0, ytdSpend: c.revenue_2026 || 0, lastYtdSpend: c.revenue_2025 || 0,
+      searchResults = (data.results||[]).map(c => ({
+        name: c.name||c.clinic,
+        email: c.email||"",
+        phone: c.phone||"",
+        contact: c.contact||c.doctor||"",
+        address: c.address||"",
+        cityStateZip: c.cityStateZip||c.state||"",
+        repName: c.repName||c.rep||"",
+        lastOrderDate: c.lastOrderDate||c.last_order_date||null,
+        daysSinceLast: c.daysSinceLast||c.days_since_last_order,
+        bucket: c.bucket||"active",
+        spend: c.spend||0,
+        ytdSpend: c.ytdSpend||c.revenue_2026||0,
+        lastYtdSpend: c.lastYtdSpend||c.revenue_2025||0,
+        droppedProducts: c.droppedProducts||[],
+        activeProducts: c.activeProducts||[],
+        pitchProducts: c.pitchProducts||[],
       }));
       renderList();
     } catch(e) {
