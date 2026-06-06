@@ -154,7 +154,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 </div>
 
 <script>
-const WORKER = "https://fragrant-cloud-6ef2.jp-d4e.workers.dev";
+const WORKER = "https://50clinicoutreach.jp-d4e.workers.dev";
 const META = {
   never:   { label:"Never ordered",  color:"#C0392B", bg:"#FDECEA" },
   dark:    { label:"Gone dark 90d+", color:"#B7770D", bg:"#FEF3CD" },
@@ -301,58 +301,55 @@ async function loadDetail(clinicName) {
   const res = await fetch(`${WORKER}/clinic-detail?name=${encodeURIComponent(clinicName)}`);
   const data = await res.json();
   if (data.error) throw new Error(data.error);
-  detailCache[clinicName] = data;
-  return data;
+  // support both {clinic:...} and direct clinic object
+  const clinic = data.clinic || data;
+  detailCache[clinicName] = clinic;
+  return clinic;
 }
 
-function renderOrders(detail, sid) {
+function renderOrders(clinic, sid) {
   const el = document.getElementById(`itab-${sid}-orders`);
   if (!el) return;
-  const products = detail.products || [];
-  const active  = products.filter(p => p.status === "Active");
-  const stopped = products.filter(p => p.status === "Stopped" || p.status === "Past Only");
-
+  const dropped = clinic.droppedProducts || [];
+  const active  = clinic.activeProducts  || [];
   let html = "";
-
-  if (stopped.length) {
-    html += `<div class="detail-section"><div class="dl">Stopped ordering (${stopped.length})</div>
+  if (dropped.length) {
+    html += `<div class="detail-section"><div class="dl">Stopped ordering (${dropped.length})</div>
       <table class="prod-table"><thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>Lost revenue</th></tr></thead><tbody>`;
-    stopped.slice(0,8).forEach(p => {
+    dropped.slice(0,8).forEach(p => {
       html += `<tr>
-        <td><div class="prod-name">${esc(p.product)}<span class="stopped-tag">${p.status}</span></div></td>
-        <td style="color:#888">${p.order_count||"—"}</td>
-        <td style="color:#888">${p.last_order_date||"—"}</td>
-        <td class="lost">${fmt(p.lost_revenue||p.total_revenue)}</td>
+        <td><div class="prod-name">${esc(p.productName)}</div></td>
+        <td style="color:#888">${p.orderCount}</td>
+        <td style="color:#888">${p.lastOrderDate} (${p.daysSince}d ago)</td>
+        <td class="lost">${fmt(p.totalSpend)}</td>
       </tr>`;
     });
     html += `</tbody></table></div>`;
   }
-
   if (active.length) {
     html += `<div class="detail-section"><div class="dl">Still ordering (${active.length})</div>
-      <table class="prod-table"><thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>Revenue</th></tr></thead><tbody>`;
+      <table class="prod-table"><thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>YTD</th></tr></thead><tbody>`;
     active.slice(0,6).forEach(p => {
       html += `<tr>
-        <td><div class="prod-name">${esc(p.product)}</div></td>
-        <td style="color:#888">${p.order_count||"—"}</td>
-        <td style="color:#888">${p.last_order_date||"—"}</td>
-        <td class="active-tag">${fmt(p.total_revenue)}</td>
+        <td><div class="prod-name">${esc(p.productName)}</div></td>
+        <td style="color:#888">${p.orderCount}</td>
+        <td style="color:#888">${p.lastOrderDate}</td>
+        <td class="active-tag">${fmt(p.ytdSpend)}</td>
       </tr>`;
     });
     html += `</tbody></table></div>`;
   }
-
-  if (!active.length && !stopped.length) html = `<div class="inv-loading">No product history found.</div>`;
+  if (!dropped.length && !active.length) html = `<div class="inv-loading">No product history found.</div>`;
   el.innerHTML = html;
 }
 
-function renderPitch(detail, sid) {
+function renderPitch(clinic, sid) {
   const el = document.getElementById(`itab-${sid}-pitch`);
   if (!el) return;
-  const pitches = detail.pitch_opportunities || [];
-  if (!pitches.length) { el.innerHTML = `<div class="inv-loading">No pitch opportunities found — this clinic has ordered everything.</div>`; return; }
-  el.innerHTML = `<div class="dl" style="margin-bottom:8px">Top products this clinic hasn't ordered yet (by market revenue)</div>` +
-    pitches.map(p => `<div class="pitch-item"><div class="pitch-name">${esc(p.product||"")}</div><div class="pitch-rev">${fmt(p.total_market_revenue)} market</div></div>`).join("");
+  const pitches = clinic.pitchProducts || [];
+  if (!pitches.length) { el.innerHTML = `<div class="inv-loading">No pitch opportunities — this clinic has ordered all top products.</div>`; return; }
+  el.innerHTML = `<div class="dl" style="margin-bottom:8px">Top products this clinic hasn't ordered (by market YTD revenue)</div>` +
+    pitches.map(p => `<div class="pitch-item"><div class="pitch-name">${esc(p.name||p.productName||"")}</div><div class="pitch-rev">${fmt(p.ytd||p.ytdRevenue)} YTD market</div></div>`).join("");
 }
 
 function renderInvoices(invoices, sid) {
@@ -380,28 +377,18 @@ function switchInner(clinicName, tab, btn) {
 
   // Lazy load detail
   if (tab === "orders" || tab === "pitch") {
-    if (!detailCache[clinicName]) {
-      loadDetail(clinicName).then(d => {
-        renderOrders(d.detail || d, sid);
-        renderPitch(d.detail || d, sid);
-      }).catch(e => {
-        const el = document.getElementById(`itab-${sid}-${tab}`);
-        if (el) el.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`;
-      });
-    } else {
-      const d = detailCache[clinicName];
-      renderOrders(d.detail || d, sid);
-      renderPitch(d.detail || d, sid);
-    }
+    loadDetail(clinicName).then(clinic => {
+      renderOrders(clinic, sid);
+      renderPitch(clinic, sid);
+    }).catch(e => {
+      const el = document.getElementById(`itab-${sid}-${tab}`);
+      if (el) el.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`;
+    });
   }
 
   if (tab === "invoices") {
-    if (!detailCache[clinicName]) {
-      loadDetail(clinicName).then(d => renderInvoices(d.invoices || [], sid))
-        .catch(e => { const el = document.getElementById(`itab-${sid}-invoices`); if(el) el.innerHTML=`<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`; });
-    } else {
-      renderInvoices(detailCache[clinicName].invoices || [], sid);
-    }
+    loadDetail(clinicName).then(clinic => renderInvoices(clinic.invoices||[], sid))
+      .catch(e => { const el=document.getElementById(`itab-${sid}-invoices`); if(el) el.innerHTML=`<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`; });
   }
 
   if (tab === "nearby") loadNearbyMap(clinicName);
@@ -425,19 +412,13 @@ async function toggle(clinicName) {
     detail.classList.add("open");
     if (chev) chev.textContent = "▲";
     // Auto-load orders tab
-    if (!detailCache[clinicName]) {
-      loadDetail(clinicName).then(d => {
-        renderOrders(d.detail || d, sid);
-        renderPitch(d.detail || d, sid);
-      }).catch(e => {
-        const el = document.getElementById(`itab-${sid}-orders`);
-        if (el) el.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed to load detail: ${esc(e.message)}</div>`;
-      });
-    } else {
-      const d = detailCache[clinicName];
-      renderOrders(d.detail || d, sid);
-      renderPitch(d.detail || d, sid);
-    }
+    loadDetail(clinicName).then(clinic => {
+      renderOrders(clinic, sid);
+      renderPitch(clinic, sid);
+    }).catch(e => {
+      const el = document.getElementById(`itab-${sid}-orders`);
+      if (el) el.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed to load detail: ${esc(e.message)}</div>`;
+    });
   }
 }
 
