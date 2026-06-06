@@ -290,7 +290,31 @@ function setFilter(f) {
   renderList();
 }
 
-function applySearch(q) { searchQuery=q.toLowerCase().trim(); renderList(); }
+let searchResults = null; // null = use allClinics, array = use search results
+let searchTimer = null;
+
+function applySearch(q) {
+  searchQuery = q.toLowerCase().trim();
+  clearTimeout(searchTimer);
+  if (searchQuery.length < 2) {
+    searchResults = null;
+    renderList();
+    return;
+  }
+  // Debounce 300ms then call worker
+  searchTimer = setTimeout(async () => {
+    try {
+      const res = await fetch(`${WORKER}/search?q=${encodeURIComponent(searchQuery)}`);
+      const data = await res.json();
+      searchResults = data.results || [];
+      renderList();
+    } catch(e) {
+      // Fall back to local filter
+      searchResults = null;
+      renderList();
+    }
+  }, 300);
+}
 
 // ── Ignore ─────────────────────────────────────────────────────
 function ignoreClinic(name, btn) {
@@ -308,18 +332,15 @@ function unignoreClinic(name) {
 // ── Render list ────────────────────────────────────────────────
 function renderList() {
   let list;
-  if (currentFilter==="ignored") {
+
+  // If search results from worker, show those regardless of filter
+  if (searchResults !== null) {
+    list = searchResults.filter(c => !ignoredSet.has(c.name));
+  } else if (currentFilter==="ignored") {
     list = allClinics.filter(c=>ignoredSet.has(c.name));
   } else {
     list = allClinics.filter(c=>!ignoredSet.has(c.name));
     if (currentFilter!=="all") list=list.filter(c=>c.bucket===currentFilter);
-  }
-  if (searchQuery) {
-    list=list.filter(c=>
-      c.name.toLowerCase().includes(searchQuery)||
-      (c.contact||"").toLowerCase().includes(searchQuery)||
-      (c.email||"").toLowerCase().includes(searchQuery)
-    );
   }
 
   const el=document.getElementById("clinicList");
@@ -591,7 +612,7 @@ function buildEmailSection(c) {
   const emails={
     a:{
       subject:`Quick question`,
-      body:`Hey ${first},\n\nQuick question — what happened?\n\nLooked through our records, your clinic ordered ${dropDrug||"compounds"} from us before but went quiet. Makes me think one of three things:\n\n1. Pricing was off\n2. Rep situation\n3. You hit the lottery and retired :)\n\nHoping #3. Either way I'd love to know.\n\nJP\nPetScript | jp@petscript.net`
+      body:`Hey ${first},\n\nQuick question — what happened?\n\nLooked through our records, your clinic ordered ${dropDrug||"compounds"} from us before but suddenly stopped.\n\nNormally, this happens for 1 of 3 reasons.\n\n1. Pricing was off\n2. Clinic was bought/sold, or had new staff take over\nor\n3. Someone in the clinic hit the Mega Millions, split the winnings with everyone and everyone retired :)\n\nHoping #3. Either way, can you help me learn more about what happened?\n\nJP\nPetScript | jp@petscript.net`
     },
     b:{
       subject:`Still compounding for the office?`,
