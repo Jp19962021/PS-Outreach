@@ -9,41 +9,31 @@
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #F4F4F4; color: #111; }
-
 .header { background: #fff; border-bottom: 1px solid #E0E0E0; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; }
 .header h1 { font-size: 17px; font-weight: 700; }
 .header .sub { font-size: 11px; color: #999; margin-top: 2px; }
-.hdr-right { display: flex; gap: 8px; align-items: center; }
-
+.hdr-right { display: flex; gap: 8px; }
 .btn { font-size: 12px; padding: 7px 14px; border-radius: 7px; border: none; cursor: pointer; font-weight: 500; }
 .btn-dark { background: #111; color: #fff; }
-.btn-dark:disabled { opacity: 0.4; cursor: default; }
+.btn-dark:disabled { opacity: 0.4; }
 .btn-outline { background: #fff; color: #333; border: 1px solid #D0D0D0; }
-
-/* Main tabs */
-.main-tabs { display: flex; gap: 0; background: #fff; border-bottom: 1px solid #E0E0E0; padding: 0 24px; }
+.main-tabs { display: flex; background: #fff; border-bottom: 1px solid #E0E0E0; padding: 0 24px; }
 .main-tab { font-size: 13px; padding: 10px 16px; cursor: pointer; border-bottom: 2px solid transparent; color: #666; font-weight: 500; }
 .main-tab.active { color: #111; border-bottom-color: #111; }
-
 .tab-content { display: none; }
 .tab-content.active { display: block; }
-
 .main { max-width: 960px; margin: 0 auto; padding: 20px 16px; }
-
-.cards { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 18px; }
+.cards { display: grid; grid-template-columns: repeat(5,1fr); gap: 8px; margin-bottom: 18px; }
 .card { background: #fff; border-radius: 9px; padding: 12px 14px; border: 1px solid #E5E5E5; }
-.card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 3px; }
-.card-value { font-size: 24px; font-weight: 700; line-height: 1.1; }
+.card-label { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: #999; margin-bottom: 3px; }
+.card-value { font-size: 24px; font-weight: 700; }
 .card-sub { font-size: 10px; color: #aaa; margin-top: 3px; }
-
 .filters { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
 .pill { font-size: 12px; padding: 5px 12px; border-radius: 20px; border: none; cursor: pointer; background: #E8E8E8; color: #555; }
 .pill.active { background: #111; color: #fff; font-weight: 600; }
-
 .list { display: flex; flex-direction: column; gap: 7px; }
-
 .clinic-card { background: #fff; border: 1px solid #E5E5E5; border-radius: 10px; overflow: hidden; }
-.clinic-row { display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer; user-select: none; }
+.clinic-row { display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer; }
 .clinic-row:hover { background: #FAFAFA; }
 .num { font-size: 11px; color: #ccc; min-width: 20px; text-align: right; flex-shrink: 0; }
 .badge { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
@@ -54,52 +44,38 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .clinic-days { font-size: 13px; font-weight: 700; }
 .clinic-ltv { font-size: 10px; color: #aaa; }
 .chevron { font-size: 10px; color: #ccc; flex-shrink: 0; }
-
 .detail { display: none; border-top: 1px solid #F0F0F0; }
 .detail.open { display: block; }
 .detail-inner { padding: 16px; background: #FAFAFA; }
-
-/* Inner tabs */
-.inner-tabs { display: flex; gap: 4px; margin-bottom: 14px; background: #F0F0F0; padding: 3px; border-radius: 8px; width: fit-content; }
+.inner-tabs { display: flex; gap: 4px; margin-bottom: 14px; background: #F0F0F0; padding: 3px; border-radius: 8px; width: fit-content; flex-wrap: wrap; }
 .itab { font-size: 11px; padding: 5px 12px; border-radius: 6px; border: none; cursor: pointer; background: transparent; color: #555; font-weight: 500; }
-.itab.active { background: #fff; color: #111; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-
+.itab.active { background: #fff; color: #111; font-weight: 600; box-shadow: 0 1px 3px rgba(0,0,0,.1); }
 .itab-content { display: none; }
 .itab-content.active { display: block; }
-
-.dl { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: #aaa; margin-bottom: 6px; font-weight: 600; }
+.dl { font-size: 10px; text-transform: uppercase; letter-spacing: .07em; color: #aaa; margin-bottom: 6px; font-weight: 600; }
 .detail-section { margin-bottom: 14px; }
-
 .rep-badge { display: inline-block; font-size: 11px; background: #EEF2FF; color: #3730A3; padding: 2px 8px; border-radius: 6px; font-weight: 500; margin-bottom: 10px; }
 .contact-chips { display: flex; gap: 10px; flex-wrap: wrap; font-size: 12px; color: #666; margin-bottom: 14px; }
-
 .spend-row { display: flex; gap: 8px; margin-bottom: 14px; }
 .spend-box { flex: 1; background: #fff; border: 1px solid #E8E8E8; border-radius: 8px; padding: 10px 12px; text-align: center; }
-.spend-label { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 3px; }
-.spend-value { font-size: 15px; font-weight: 700; color: #111; }
+.spend-label { font-size: 10px; color: #aaa; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+.spend-value { font-size: 15px; font-weight: 700; }
 .spend-delta { font-size: 11px; margin-top: 2px; }
 .up { color: #1D9E75; } .down { color: #C0392B; }
-
 .prod-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 6px; }
-.prod-table th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: 0.05em; color: #aaa; padding: 0 0 6px; border-bottom: 1px solid #EEE; }
+.prod-table th { text-align: left; font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: #aaa; padding: 0 0 6px; border-bottom: 1px solid #EEE; }
 .prod-table td { padding: 7px 0; border-bottom: 1px solid #F5F5F5; vertical-align: top; }
 .prod-table td:last-child { text-align: right; white-space: nowrap; }
 .prod-name { font-weight: 500; color: #111; line-height: 1.4; }
-.prod-meta { font-size: 10px; color: #888; margin-top: 1px; }
 .lost { color: #C0392B; font-weight: 600; }
 .active-tag { color: #1D9E75; font-weight: 600; }
-.switched-tag { font-size: 10px; background: #FEF9E7; color: #B7770D; padding: 1px 6px; border-radius: 4px; margin-left: 6px; }
-
-/* Pitch products */
+.stopped-tag { font-size: 10px; background: #FEF9E7; color: #B7770D; padding: 1px 6px; border-radius: 4px; margin-left: 4px; }
 .pitch-item { display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; background: #fff; border: 1px solid #E8E8E8; border-radius: 8px; margin-bottom: 6px; }
-.pitch-name { font-size: 12px; font-weight: 500; color: #111; }
+.pitch-name { font-size: 12px; font-weight: 500; }
 .pitch-rev { font-size: 11px; color: #1D9E75; font-weight: 600; }
-
-/* Invoice panel */
-.invoice-panel { background: #fff; border: 1px solid #E8E8E8; border-radius: 8px; padding: 12px 14px; margin-bottom: 14px; }
-.invoice-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid #F5F5F5; font-size: 12px; }
-.invoice-row:last-child { border-bottom: none; }
-.inv-num { font-weight: 600; color: #111; min-width: 90px; }
+.inv-row { display: flex; align-items: center; gap: 10px; padding: 6px 0; border-bottom: 1px solid #F5F5F5; font-size: 12px; }
+.inv-row:last-child { border-bottom: none; }
+.inv-num { font-weight: 600; min-width: 90px; }
 .inv-date { color: #888; min-width: 90px; }
 .inv-status { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 600; }
 .inv-paid { background: #E1F5EE; color: #085041; }
@@ -107,34 +83,24 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .inv-overdue { background: #FDECEA; color: #C0392B; }
 .inv-amount { margin-left: auto; font-weight: 600; }
 .inv-loading { font-size: 12px; color: #aaa; padding: 8px 0; }
-
-/* Email */
 .email-section { background: #fff; border: 1px solid #E8E8E8; border-radius: 8px; padding: 14px; }
-.email-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
+.etabs { display: flex; gap: 6px; margin-bottom: 12px; }
 .etab { font-size: 11px; padding: 4px 10px; border-radius: 6px; border: 1px solid #E0E0E0; cursor: pointer; background: #fff; }
 .etab.active { background: #111; color: #fff; border-color: #111; }
 .email-subject { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 8px; }
 .email-body { font-size: 13px; color: #333; white-space: pre-wrap; line-height: 1.7; background: #FAFAFA; border-radius: 6px; padding: 12px; border: 1px solid #F0F0F0; }
 .copy-btn { margin-top: 10px; font-size: 11px; padding: 5px 12px; cursor: pointer; border-radius: 6px; border: 1px solid #D0D0D0; background: #fff; }
-
-/* Map */
-#map-tab-content { padding: 16px; }
-#main-map { height: 600px; border-radius: 10px; border: 1px solid #E0E0E0; }
+#main-map { height: 580px; border-radius: 10px; border: 1px solid #E0E0E0; }
 .map-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; font-size: 12px; color: #555; align-items: center; }
-.legend-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; }
-
-/* Nearby map */
-#nearby-map { height: 280px; border-radius: 8px; border: 1px solid #E8E8E8; margin-bottom: 10px; }
-
+.ldot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; }
 .loading { text-align: center; padding: 4rem; color: #999; font-size: 14px; }
 .error-box { background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 10px; padding: 16px; color: #991B1B; font-size: 13px; }
 .footer { text-align: center; font-size: 11px; color: #ccc; margin-top: 20px; padding-bottom: 40px; }
-
-@media(max-width:640px){ .cards{grid-template-columns:repeat(3,1fr);} .spend-row{flex-wrap:wrap;} }
+.skeleton { background: #F0F0F0; border-radius: 6px; height: 14px; margin-bottom: 8px; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
 </style>
 </head>
 <body>
-
 <div class="header">
   <div>
     <h1>PetScript — Daily Outreach</h1>
@@ -146,13 +112,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
   </div>
 </div>
 
-<!-- Main tabs -->
 <div class="main-tabs">
-  <div class="main-tab active" onclick="switchMainTab('list',this)">📋 Today's 50</div>
-  <div class="main-tab" onclick="switchMainTab('map',this)">🗺 All clinics map</div>
+  <div class="main-tab active" onclick="switchMain('list',this)">📋 Today's 50</div>
+  <div class="main-tab" onclick="switchMain('map',this)">🗺 All clinics map</div>
 </div>
 
-<!-- LIST TAB -->
 <div id="list-tab-content" class="tab-content active">
   <div class="main">
     <div class="cards" id="cards" style="display:none">
@@ -162,7 +126,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
       <div class="card"><div class="card-label">Lapsed 45–90d</div><div class="card-value" style="color:#1A5CA8" id="cLapsed">—</div><div class="card-sub">priority 3</div></div>
       <div class="card"><div class="card-label">Dropped SKU</div><div class="card-value" style="color:#6B21A8" id="cDropped">—</div><div class="card-sub">priority 4</div></div>
     </div>
-
     <div class="filters" id="filters" style="display:none">
       <button class="pill active" onclick="setFilter('all')" data-f="all">All</button>
       <button class="pill" onclick="setFilter('never')" data-f="never">Never ordered</button>
@@ -170,46 +133,41 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
       <button class="pill" onclick="setFilter('lapsed')" data-f="lapsed">Lapsed</button>
       <button class="pill" onclick="setFilter('dropped')" data-f="dropped">Dropped SKU</button>
     </div>
-
-    <div id="stateLoading" class="loading">Loading clinic data…<br><small style="color:#bbb;font-size:12px;display:block;margin-top:8px">Parsing data server-side</small></div>
+    <div id="stateLoading" class="loading">Loading clinic data…<br><small style="color:#bbb;font-size:12px;display:block;margin-top:8px">First load may take 15 seconds while data is cached</small></div>
     <div id="stateError" class="error-box" style="display:none"><strong>Error:</strong> <span id="errMsg"></span><br><button class="btn btn-outline" style="margin-top:10px" onclick="load()">Retry</button></div>
     <div class="list" id="clinicList" style="display:none"></div>
     <div class="footer" id="footer"></div>
   </div>
 </div>
 
-<!-- MAP TAB -->
 <div id="map-tab-content" class="tab-content">
-  <div id="map-tab-content-inner" style="padding:16px;max-width:960px;margin:0 auto">
+  <div style="max-width:960px;margin:0 auto;padding:16px">
     <div class="map-legend">
-      <span><span class="legend-dot" style="background:#C0392B"></span>Never ordered</span>
-      <span><span class="legend-dot" style="background:#B7770D"></span>Gone dark</span>
-      <span><span class="legend-dot" style="background:#1A5CA8"></span>Lapsed</span>
-      <span><span class="legend-dot" style="background:#6B21A8"></span>Dropped SKU</span>
-      <span style="color:#aaa;font-size:11px">Click a pin for details</span>
+      <span><span class="ldot" style="background:#C0392B"></span>Never ordered</span>
+      <span><span class="ldot" style="background:#B7770D"></span>Gone dark</span>
+      <span><span class="ldot" style="background:#1A5CA8"></span>Lapsed</span>
+      <span><span class="ldot" style="background:#6B21A8"></span>Dropped SKU</span>
     </div>
     <div id="main-map"></div>
-    <div style="font-size:11px;color:#aaa;margin-top:8px">Geocoding via OpenStreetMap — addresses load as you view the map</div>
+    <div style="font-size:11px;color:#aaa;margin-top:8px">Pins load progressively via OpenStreetMap geocoding</div>
   </div>
 </div>
 
 <script>
 const WORKER = "https://50clinicoutreach.jp-d4e.workers.dev";
 const META = {
-  never:   { label:"Never ordered",   color:"#C0392B", bg:"#FDECEA" },
-  dark:    { label:"Gone dark 90d+",  color:"#B7770D", bg:"#FEF3CD" },
-  lapsed:  { label:"Lapsed 45–90d",   color:"#1A5CA8", bg:"#E8F0FD" },
-  dropped: { label:"Dropped SKU",     color:"#6B21A8", bg:"#F3E8FF" },
+  never:   { label:"Never ordered",  color:"#C0392B", bg:"#FDECEA" },
+  dark:    { label:"Gone dark 90d+", color:"#B7770D", bg:"#FEF3CD" },
+  lapsed:  { label:"Lapsed 45–90d",  color:"#1A5CA8", bg:"#E8F0FD" },
+  dropped: { label:"Dropped SKU",    color:"#6B21A8", bg:"#F3E8FF" },
 };
 
-let allClinics = [], currentFilter = "all";
-let mainMap = null, mainMapInited = false;
-const geocodeCache = {};
+let allClinics = [], currentFilter = "all", mainMap = null, mainMapInited = false;
+const geoCache = {}, detailCache = {};
 
 document.getElementById("dateStr").textContent = new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"});
 
-// ── Main tab switch ───────────────────────────────────────────
-function switchMainTab(tab, btn) {
+function switchMain(tab, btn) {
   document.querySelectorAll(".main-tab").forEach(t => t.classList.remove("active"));
   document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
   btn.classList.add("active");
@@ -217,7 +175,6 @@ function switchMainTab(tab, btn) {
   if (tab === "map" && !mainMapInited && allClinics.length) initMainMap();
 }
 
-// ── Load ──────────────────────────────────────────────────────
 async function load() {
   show("loading");
   document.getElementById("refreshBtn").disabled = true;
@@ -226,15 +183,15 @@ async function load() {
     if (!res.ok) throw new Error(`Worker returned ${res.status}`);
     const data = await res.json();
     if (data.error) throw new Error(data.error);
-    allClinics = data.clinics;
-    document.getElementById("cTotal").textContent   = data.clinics.length;
+    allClinics = data.clinics || [];
+    document.getElementById("cTotal").textContent   = allClinics.length;
     document.getElementById("cPool").textContent    = `${(data.total_eligible||0).toLocaleString()} eligible`;
     document.getElementById("cNever").textContent   = data.counts?.never   || 0;
     document.getElementById("cDark").textContent    = data.counts?.dark    || 0;
     document.getElementById("cLapsed").textContent  = data.counts?.lapsed  || 0;
     document.getElementById("cDropped").textContent = data.counts?.dropped || 0;
     document.getElementById("footer").textContent   = `Last synced: ${new Date(data.generated_at).toLocaleString()}`;
-    updatePills(data.clinics);
+    updatePills();
     show("ready");
     renderList(currentFilter);
   } catch(e) {
@@ -244,9 +201,9 @@ async function load() {
   document.getElementById("refreshBtn").disabled = false;
 }
 
-function updatePills(clinics) {
-  const cnt = {all:clinics.length,never:0,dark:0,lapsed:0,dropped:0};
-  clinics.forEach(c => { if(cnt[c.bucket]!==undefined) cnt[c.bucket]++; });
+function updatePills() {
+  const cnt = {all:allClinics.length,never:0,dark:0,lapsed:0,dropped:0};
+  allClinics.forEach(c => { if(cnt[c.bucket]!==undefined) cnt[c.bucket]++; });
   document.querySelectorAll(".pill").forEach(p => {
     const f = p.dataset.f;
     p.textContent = f==="all" ? `All (${cnt.all})` : `${META[f]?.label||f} (${cnt[f]||0})`;
@@ -256,14 +213,13 @@ function updatePills(clinics) {
 function reroll() { allClinics = [...allClinics].sort(()=>Math.random()-0.5); renderList(currentFilter); }
 function setFilter(f) {
   currentFilter = f;
-  document.querySelectorAll(".pill").forEach(p => p.classList.toggle("active", p.dataset.f===f));
+  document.querySelectorAll(".pill").forEach(p => p.classList.toggle("active",p.dataset.f===f));
   renderList(f);
 }
 
-function fmt(n) { return Number(n||0).toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0}); }
-function esc(s) { return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+const fmt = n => Number(n||0).toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0});
+const esc = s => String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 
-// ── Render list ───────────────────────────────────────────────
 function renderList(filter) {
   const list = filter==="all" ? allClinics : allClinics.filter(c=>c.bucket===filter);
   const el = document.getElementById("clinicList");
@@ -275,7 +231,7 @@ function renderList(filter) {
     const div = document.createElement("div");
     div.className = "clinic-card";
     div.innerHTML = `
-      <div class="clinic-row" onclick="toggle(${c.idx},'${esc(c.name).replace(/'/g,"\\'")}')">
+      <div class="clinic-row" onclick="toggle('${esc(c.name).replace(/'/g,"\\'")}')">
         <div class="num">${i+1}</div>
         <div class="badge" style="background:${m.bg};color:${m.color}">${m.label}</div>
         <div class="clinic-info">
@@ -288,364 +244,306 @@ function renderList(filter) {
             : `<div class="clinic-days" style="color:#bbb">no orders on record</div>`}
           ${c.spend>0?`<div class="clinic-ltv">${fmt(c.spend)} lifetime</div>`:""}
         </div>
-        <div class="chevron" id="chev-${c.idx}">▼</div>
+        <div class="chevron" id="chev-${esc(c.name).replace(/[^a-z0-9]/gi,'_')}">▼</div>
       </div>
-      <div class="detail" id="detail-${c.idx}">
+      <div class="detail" id="detail-${esc(c.name).replace(/[^a-z0-9]/gi,'_')}">
         <div class="detail-inner">
-          ${buildDetail(c,m)}
+          ${buildDetailShell(c, m)}
         </div>
       </div>`;
     el.appendChild(div);
   });
 }
 
-// ── Detail panel ──────────────────────────────────────────────
-function buildDetail(c, m) {
+function safeId(name) { return String(name).replace(/[^a-z0-9]/gi,"_"); }
+
+function buildDetailShell(c, m) {
   const ytdDelta = c.lastYtdSpend > 0 ? ((c.ytdSpend - c.lastYtdSpend)/c.lastYtdSpend*100).toFixed(0) : null;
   const deltaHtml = ytdDelta!==null
     ? `<div class="spend-delta ${ytdDelta>=0?"up":"down"}">${ytdDelta>=0?"▲":"▼"} ${Math.abs(ytdDelta)}% vs last year</div>`
     : `<div class="spend-delta" style="color:#aaa">No prior year data</div>`;
 
-  // Inner tabs
-  let html = `
-    ${c.repName ? `<div class="rep-badge">Rep: ${esc(c.repName)}</div>` : ""}
+  return `
+    ${c.repName?`<div class="rep-badge">Rep: ${esc(c.repName)}</div>`:""}
     <div class="contact-chips">
-      ${c.phone   ? `<span>📞 ${esc(c.phone)}</span>`   : ""}
-      ${c.email   ? `<span>✉️ ${esc(c.email)}</span>`   : ""}
-      ${c.address ? `<span>📍 ${esc(c.address)}${c.cityStateZip?", "+esc(c.cityStateZip):""}</span>` : ""}
-      ${c.lastOrderDate ? `<span>🗓 Last order: ${c.lastOrderDate}</span>` : ""}
+      ${c.phone?`<span>📞 ${esc(c.phone)}</span>`:""}
+      ${c.email?`<span>✉️ ${esc(c.email)}</span>`:""}
+      ${c.address?`<span>📍 ${esc(c.address)}${c.cityStateZip?", "+esc(c.cityStateZip):""}</span>`:""}
+      ${c.lastOrderDate?`<span>🗓 Last order: ${c.lastOrderDate}</span>`:""}
     </div>
-
     <div class="spend-row">
       <div class="spend-box"><div class="spend-label">YTD</div><div class="spend-value">${fmt(c.ytdSpend)}</div>${deltaHtml}</div>
       <div class="spend-box"><div class="spend-label">Last Year YTD</div><div class="spend-value">${fmt(c.lastYtdSpend)}</div></div>
-      <div class="spend-box"><div class="spend-label">Last 6 Months</div><div class="spend-value">${fmt(c.sixMoSpend)}</div></div>
       <div class="spend-box"><div class="spend-label">Lifetime</div><div class="spend-value">${fmt(c.spend)}</div></div>
     </div>
-
     <div class="inner-tabs">
-      <button class="itab active" onclick="switchInnerTab(${c.idx},'orders',this)">Orders</button>
-      <button class="itab" onclick="switchInnerTab(${c.idx},'pitch',this)">Pitch</button>
-      <button class="itab" onclick="switchInnerTab(${c.idx},'nearby',this)">Nearby clinics</button>
-      <button class="itab" onclick="switchInnerTab(${c.idx},'invoices',this)">Invoices</button>
-      <button class="itab" onclick="switchInnerTab(${c.idx},'email',this)">Email drafts</button>
+      <button class="itab active" onclick="switchInner('${esc(c.name).replace(/'/g,"\\'")}','orders',this)">Orders & products</button>
+      <button class="itab" onclick="switchInner('${esc(c.name).replace(/'/g,"\\'")}','pitch',this)">Pitch</button>
+      <button class="itab" onclick="switchInner('${esc(c.name).replace(/'/g,"\\'")}','nearby',this)">Nearby</button>
+      <button class="itab" onclick="switchInner('${esc(c.name).replace(/'/g,"\\'")}','invoices',this)">Invoices</button>
+      <button class="itab" onclick="switchInner('${esc(c.name).replace(/'/g,"\\'")}','email',this)">Email drafts</button>
     </div>
+    <div class="itab-content active" id="itab-${safeId(c.name)}-orders">
+      <div class="skeleton" style="width:60%"></div><div class="skeleton" style="width:80%"></div><div class="skeleton" style="width:50%"></div>
+    </div>
+    <div class="itab-content" id="itab-${safeId(c.name)}-pitch"><div class="inv-loading">Loading…</div></div>
+    <div class="itab-content" id="itab-${safeId(c.name)}-nearby">
+      <div id="nearby-map-${safeId(c.name)}" style="height:260px;border-radius:8px;border:1px solid #E8E8E8;background:#f8f8f8;display:flex;align-items:center;justify-content:center;margin-bottom:8px">
+        <span style="color:#aaa;font-size:13px">Click Nearby to load map</span>
+      </div>
+    </div>
+    <div class="itab-content" id="itab-${safeId(c.name)}-invoices"><div class="inv-loading">Click Invoices to load from Zoho</div></div>
+    <div class="itab-content" id="itab-${safeId(c.name)}-email">${buildEmailSection(c)}</div>`;
+}
 
-    <!-- ORDERS tab -->
-    <div class="itab-content active" id="itab-${c.idx}-orders">`;
+async function loadDetail(clinicName) {
+  if (detailCache[clinicName]) return detailCache[clinicName];
+  const res = await fetch(`${WORKER}/clinic-detail?name=${encodeURIComponent(clinicName)}`);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error);
+  detailCache[clinicName] = data;
+  return data;
+}
 
-  // Stopped ordering
-  if (c.droppedProducts?.length) {
-    html += `<div class="detail-section"><div class="dl">Stopped ordering (${c.droppedProducts.length})</div>
+function renderOrders(detail, sid) {
+  const el = document.getElementById(`itab-${sid}-orders`);
+  if (!el) return;
+  const products = detail.products || [];
+  const active  = products.filter(p => p.status === "Active");
+  const stopped = products.filter(p => p.status === "Stopped" || p.status === "Past Only");
+
+  let html = "";
+
+  if (stopped.length) {
+    html += `<div class="detail-section"><div class="dl">Stopped ordering (${stopped.length})</div>
       <table class="prod-table"><thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>Lost revenue</th></tr></thead><tbody>`;
-    c.droppedProducts.slice(0,8).forEach(p => {
+    stopped.slice(0,8).forEach(p => {
       html += `<tr>
-        <td><div class="prod-name">${esc(p.productName)}${p.switched?`<span class="switched-tag">switched</span>`:""}</div></td>
-        <td style="color:#888">${p.orderCount}</td>
-        <td style="color:#888">${p.lastOrderDate} (${p.daysSince}d)</td>
-        <td class="lost">${fmt(p.totalSpend)}</td>
+        <td><div class="prod-name">${esc(p.product)}<span class="stopped-tag">${p.status}</span></div></td>
+        <td style="color:#888">${p.order_count||"—"}</td>
+        <td style="color:#888">${p.last_order_date||"—"}</td>
+        <td class="lost">${fmt(p.lost_revenue||p.total_revenue)}</td>
       </tr>`;
     });
     html += `</tbody></table></div>`;
   }
 
-  // Still ordering
-  if (c.activeProducts?.length) {
-    html += `<div class="detail-section"><div class="dl">Still ordering (${c.activeProducts.length})</div>
-      <table class="prod-table"><thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>YTD</th></tr></thead><tbody>`;
-    c.activeProducts.slice(0,6).forEach(p => {
+  if (active.length) {
+    html += `<div class="detail-section"><div class="dl">Still ordering (${active.length})</div>
+      <table class="prod-table"><thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>Revenue</th></tr></thead><tbody>`;
+    active.slice(0,6).forEach(p => {
       html += `<tr>
-        <td><div class="prod-name">${esc(p.productName)}${p.switched?`<span class="switched-tag">switched</span>`:""}</div></td>
-        <td style="color:#888">${p.orderCount}</td>
-        <td style="color:#888">${p.lastOrderDate}</td>
-        <td class="active-tag">${fmt(p.ytdSpend)}</td>
+        <td><div class="prod-name">${esc(p.product)}</div></td>
+        <td style="color:#888">${p.order_count||"—"}</td>
+        <td style="color:#888">${p.last_order_date||"—"}</td>
+        <td class="active-tag">${fmt(p.total_revenue)}</td>
       </tr>`;
     });
     html += `</tbody></table></div>`;
   }
 
-  if (!c.droppedProducts?.length && !c.activeProducts?.length) {
-    html += `<div style="font-size:13px;color:#aaa;padding:12px 0">No order history found.</div>`;
-  }
-
-  html += `</div>`;
-
-  // PITCH tab
-  html += `<div class="itab-content" id="itab-${c.idx}-pitch">`;
-  if (c.pitchProducts?.length) {
-    html += `<div class="dl" style="margin-bottom:8px">Top products this clinic hasn't ordered (by YTD revenue across all clinics)</div>`;
-    c.pitchProducts.forEach(p => {
-      html += `<div class="pitch-item">
-        <div class="pitch-name">${esc(p.productName)}</div>
-        <div class="pitch-rev">${fmt(p.ytdRevenue)} market YTD</div>
-      </div>`;
-    });
-  } else {
-    html += `<div style="font-size:13px;color:#aaa;padding:12px 0">This clinic has ordered all top products.</div>`;
-  }
-  html += `</div>`;
-
-  // NEARBY tab
-  html += `<div class="itab-content" id="itab-${c.idx}-nearby">
-    <div id="nearby-map-${c.idx}" style="height:280px;border-radius:8px;border:1px solid #E8E8E8;margin-bottom:10px;background:#f8f8f8;display:flex;align-items:center;justify-content:center;">
-      <span style="color:#aaa;font-size:13px">Click "Nearby clinics" to load map</span>
-    </div>
-    <div id="nearby-list-${c.idx}" style="font-size:12px;color:#aaa"></div>
-  </div>`;
-
-  // INVOICES tab
-  html += `<div class="itab-content" id="itab-${c.idx}-invoices">
-    <div class="invoice-panel" id="inv-${c.idx}">
-      <div class="inv-loading">Click "Invoices" to load from Zoho</div>
-    </div>
-  </div>`;
-
-  // EMAIL tab
-  html += `<div class="itab-content" id="itab-${c.idx}-email">${buildEmailSection(c)}</div>`;
-
-  html += `</div>`; // close detail
-
-  return html;
+  if (!active.length && !stopped.length) html = `<div class="inv-loading">No product history found.</div>`;
+  el.innerHTML = html;
 }
 
-// ── Inner tab switch ──────────────────────────────────────────
-function switchInnerTab(clinicIdx, tab, btn) {
-  const detail = document.getElementById(`detail-${clinicIdx}`);
-  detail.querySelectorAll(".itab").forEach(b => b.classList.remove("active"));
-  detail.querySelectorAll(".itab-content").forEach(t => t.classList.remove("active"));
-  btn.classList.add("active");
-  document.getElementById(`itab-${clinicIdx}-${tab}`)?.classList.add("active");
-
-  // Lazy load on tab click
-  if (tab === "invoices") loadInvoices(clinicIdx, allClinics.find(c=>c.idx===clinicIdx)?.name || "");
-  if (tab === "nearby")   loadNearbyMap(clinicIdx);
+function renderPitch(detail, sid) {
+  const el = document.getElementById(`itab-${sid}-pitch`);
+  if (!el) return;
+  const pitches = detail.pitch_opportunities || [];
+  if (!pitches.length) { el.innerHTML = `<div class="inv-loading">No pitch opportunities found — this clinic has ordered everything.</div>`; return; }
+  el.innerHTML = `<div class="dl" style="margin-bottom:8px">Top products this clinic hasn't ordered yet (by market revenue)</div>` +
+    pitches.map(p => `<div class="pitch-item"><div class="pitch-name">${esc(p.product||"")}</div><div class="pitch-rev">${fmt(p.total_market_revenue)} market</div></div>`).join("");
 }
 
-// ── Geocode helper ────────────────────────────────────────────
-async function getCoords(address, cityStateZip) {
-  const key = `${address}|${cityStateZip}`;
-  if (geocodeCache[key] !== undefined) return geocodeCache[key];
-  try {
-    const res = await fetch(`${WORKER}/geocode?address=${encodeURIComponent(address)}&city=${encodeURIComponent(cityStateZip)}`);
-    const data = await res.json();
-    geocodeCache[key] = data.coords || null;
-    return geocodeCache[key];
-  } catch { geocodeCache[key] = null; return null; }
-}
-
-// ── Main map ──────────────────────────────────────────────────
-async function initMainMap() {
-  mainMapInited = true;
-  mainMap = L.map("main-map").setView([39.5, -98.35], 4);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "© OpenStreetMap contributors", maxZoom: 18
-  }).addTo(mainMap);
-
-  // Geocode and plot each clinic (throttled)
-  for (const c of allClinics) {
-    const coords = await getCoords(c.address, c.cityStateZip);
-    if (!coords) continue;
-    const m = META[c.bucket] || META.never;
-    const marker = L.circleMarker([coords.lat, coords.lng], {
-      radius: 7, fillColor: m.color, color: "#fff", weight: 1.5, fillOpacity: 0.85
-    }).addTo(mainMap);
-    marker.bindPopup(`<strong>${c.name}</strong><br>${m.label}<br>${c.daysSinceLast!=null?c.daysSinceLast+"d ago":"no orders"}`);
-    await new Promise(r => setTimeout(r, 200)); // rate limit Nominatim
-  }
-}
-
-// ── Nearby map ────────────────────────────────────────────────
-async function loadNearbyMap(clinicIdx) {
-  const clinic = allClinics.find(c => c.idx === clinicIdx);
-  if (!clinic) return;
-
-  const container = document.getElementById(`nearby-map-${clinicIdx}`);
-  const listEl    = document.getElementById(`nearby-list-${clinicIdx}`);
-  container.innerHTML = `<span style="color:#aaa;font-size:13px">Geocoding…</span>`;
-
-  const coords = await getCoords(clinic.address, clinic.cityStateZip);
-  if (!coords) {
-    container.innerHTML = `<span style="color:#aaa;font-size:13px">Could not geocode this clinic's address</span>`;
-    return;
-  }
-
-  // Init map
-  container.innerHTML = "";
-  container.style.display = "block";
-  const map = L.map(container).setView([coords.lat, coords.lng], 10);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "© OpenStreetMap contributors"
-  }).addTo(map);
-
-  // This clinic marker
-  L.circleMarker([coords.lat, coords.lng], {
-    radius: 9, fillColor: "#111", color: "#fff", weight: 2, fillOpacity: 1
-  }).addTo(map).bindPopup(`<strong>${clinic.name}</strong><br>(This clinic)`).openPopup();
-
-  // Find nearby clinics by matching state from cityStateZip
-  const stateMatch = (clinic.cityStateZip || "").match(/\b([A-Z]{2})\b/);
-  const clinicState = stateMatch ? stateMatch[1] : "";
-  const nearby = allClinics.filter(c => {
-    if (c.idx === clinic.idx) return false;
-    const s = (c.cityStateZip || "").match(/\b([A-Z]{2})\b/)?.[1] || "";
-    return s && s === clinicState;
-  }).slice(0, 15);
-
-  listEl.innerHTML = nearby.length
-    ? `<div style="margin-bottom:6px;color:#555">${nearby.length} other clinics in today's list in same state:</div>`
-    : `<div style="color:#aaa">No other clinics in same state in today's list.</div>`;
-
-  for (const nc of nearby) {
-    const nc2 = await getCoords(nc.address, nc.cityStateZip);
-    if (!nc2) { await new Promise(r => setTimeout(r, 150)); continue; }
-    const m = META[nc.bucket] || META.never;
-    L.circleMarker([nc2.lat, nc2.lng], {
-      radius: 6, fillColor: m.color, color: "#fff", weight: 1.5, fillOpacity: 0.8
-    }).addTo(map).bindPopup(`<strong>${nc.name}</strong><br>${m.label}`);
-    listEl.innerHTML += `<div style="padding:3px 0;border-bottom:1px solid #F5F5F5;font-size:12px">
-      <span style="color:${m.color};font-weight:600">●</span> ${esc(nc.name)} · ${nc.daysSinceLast!=null?nc.daysSinceLast+"d ago":"no orders"}
+function renderInvoices(invoices, sid) {
+  const el = document.getElementById(`itab-${sid}-invoices`);
+  if (!el) return;
+  if (!invoices.length) { el.innerHTML = `<div class="inv-loading">No open/overdue invoices in Zoho for this clinic.</div>`; return; }
+  el.innerHTML = invoices.slice(0,10).map(inv => {
+    const sc = inv.status==="overdue"?"inv-overdue":inv.status==="paid"?"inv-paid":"inv-open";
+    return `<div class="inv-row">
+      <span class="inv-num">${esc(inv.invoice_number)}</span>
+      <span class="inv-date">${esc(inv.invoice_date)}</span>
+      <span class="inv-status ${sc}">${inv.status}</span>
+      <span class="inv-amount">${fmt(inv.total)}</span>
     </div>`;
-    await new Promise(r => setTimeout(r, 200));
-  }
+  }).join("");
 }
 
-// ── Load Zoho invoices ────────────────────────────────────────
-async function loadInvoices(clinicIdx, clinicName) {
-  const panel = document.getElementById(`inv-${clinicIdx}`);
-  if (!panel || panel.dataset.loaded) return;
-  panel.dataset.loaded = "1";
-  panel.innerHTML = `<div class="inv-loading">Loading from Zoho…</div>`;
-  try {
-    const res = await fetch(`${WORKER}/clinic-detail?name=${encodeURIComponent(clinicName)}&t=${Date.now()}`);
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    const invoices = data.invoices || [];
-    if (!invoices.length) {
-      panel.innerHTML = `<div class="inv-loading">No open/overdue invoices found in Zoho for this clinic.</div>`;
-      return;
+function switchInner(clinicName, tab, btn) {
+  const sid = safeId(clinicName);
+  const detail_el = document.getElementById(`detail-${sid}`);
+  detail_el.querySelectorAll(".itab").forEach(b => b.classList.remove("active"));
+  detail_el.querySelectorAll(".itab-content").forEach(t => t.classList.remove("active"));
+  btn.classList.add("active");
+  document.getElementById(`itab-${sid}-${tab}`)?.classList.add("active");
+
+  // Lazy load detail
+  if (tab === "orders" || tab === "pitch") {
+    if (!detailCache[clinicName]) {
+      loadDetail(clinicName).then(d => {
+        renderOrders(d.detail || d, sid);
+        renderPitch(d.detail || d, sid);
+      }).catch(e => {
+        const el = document.getElementById(`itab-${sid}-${tab}`);
+        if (el) el.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`;
+      });
+    } else {
+      const d = detailCache[clinicName];
+      renderOrders(d.detail || d, sid);
+      renderPitch(d.detail || d, sid);
     }
-    panel.innerHTML = invoices.slice(0,10).map(inv => {
-      const statusClass = inv.status === "paid" ? "inv-paid" : inv.status === "overdue" ? "inv-overdue" : "inv-open";
-      return `<div class="invoice-row">
-        <span class="inv-num">${esc(inv.invoice_number)}</span>
-        <span class="inv-date">${esc(inv.invoice_date)}</span>
-        <span class="inv-status ${statusClass}">${inv.status}</span>
-        <span class="inv-amount">${fmt(inv.total)}</span>
-      </div>`;
-    }).join("");
-  } catch(e) {
-    panel.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`;
   }
+
+  if (tab === "invoices") {
+    if (!detailCache[clinicName]) {
+      loadDetail(clinicName).then(d => renderInvoices(d.invoices || [], sid))
+        .catch(e => { const el = document.getElementById(`itab-${sid}-invoices`); if(el) el.innerHTML=`<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`; });
+    } else {
+      renderInvoices(detailCache[clinicName].invoices || [], sid);
+    }
+  }
+
+  if (tab === "nearby") loadNearbyMap(clinicName);
 }
 
-// ── Email drafts ──────────────────────────────────────────────
-function buildEmailSection(c) {
-  const first = (c.contact||"there").split(" ")[0];
-  const topDrop = c.droppedProducts?.[0];
-  const topActive = c.activeProducts?.[0];
-
-  const emails = {
-    a: buildEmailA(c, first, topDrop),
-    b: buildEmailB(c, first, topDrop, topActive),
-    c: buildEmailC(c, first, topDrop),
-  };
-
-  let html = `<div class="email-section">
-    <div class="email-tabs">
-      <button class="etab active" onclick="switchEmailTab(${c.idx},'a',this)">Win-back</button>
-      <button class="etab" onclick="switchEmailTab(${c.idx},'b',this)">Check-in</button>
-      <button class="etab" onclick="switchEmailTab(${c.idx},'c',this)">Product drop</button>
-    </div>`;
-
-  ["a","b","c"].forEach(key => {
-    const email = emails[key];
-    html += `<div id="email-${c.idx}-${key}" style="display:${key==="a"?"block":"none"}">
-      <div class="email-subject">Subject: ${esc(email.subject)}</div>
-      <div class="email-body" id="body-${c.idx}-${key}">${esc(email.body)}</div>
-      <button class="copy-btn" onclick="copyEmail(${c.idx},'${key}')">📋 Copy</button>
-    </div>`;
-  });
-
-  return html + `</div>`;
-}
-
-function buildEmailA(c, first, topDrop) {
-  return {
-    subject: `Quick question`,
-    body: `Hey ${first},
-
-Quick question, what happened? Looking through old records I can see your clinic ordered ${topDrop ? topDrop.productName.split(" ").slice(0,3).join(" ") : "a few compounded medications"} from us in the past but haven't ordered again in some time which makes me think one of three things, pricing was too high, you didn't like your sales rep, or you've hit the lottery and retired :)
-
-Hoping it's the 3rd option but would love the opportunity to learn what happened.
-
-JP
-PetScript Pharmacy
-jp@petscript.net`
-  };
-}
-
-function buildEmailB(c, first, topDrop, topActive) {
-  let body = `Hey ${first},\n\nJust checking in — it's been ${c.daysSinceLast != null ? c.daysSinceLast + " days" : "a while"} since your last order with us.`;
-  if (topActive) body += ` Good to see you're still ordering ${topActive.productName.split(" ").slice(0,3).join(" ")}.`;
-  if (topDrop) body += `\n\nNoticed you stopped ordering ${topDrop.productName.split(" ").slice(0,3).join(" ")} — did you find another source, or is there something I can do on pricing?`;
-  body += `\n\nEither way no pressure, just want to make sure we're taking care of you.\n\nJP\nPetScript Pharmacy\njp@petscript.net`;
-  return { subject: `Checking in`, body };
-}
-
-function buildEmailC(c, first, topDrop) {
-  const prod = topDrop ? topDrop.productName.split(" ").slice(0,4).join(" ") : "one of your medications";
-  return {
-    subject: `Still ordering ${prod}?`,
-    body: `Hey ${first},
-
-Saw it's been ${topDrop ? topDrop.daysSince + " days" : "a while"} since your last order of ${prod}. Are you still stocking it?
-
-If pricing was the issue I can fix it. If you found a better source I'd love to know why.
-
-JP
-PetScript Pharmacy
-jp@petscript.net`
-  };
-}
-
-function switchEmailTab(idx, tab, btn) {
-  const section = document.getElementById(`itab-${idx}-email`);
-  section.querySelectorAll(".etab").forEach(b => b.classList.remove("active"));
-  btn.classList.add("active");
-  ["a","b","c"].forEach(k => {
-    const el = document.getElementById(`email-${idx}-${k}`);
-    if (el) el.style.display = k===tab?"block":"none";
-  });
-}
-
-function copyEmail(idx, tab) {
-  const subjectEl = document.querySelector(`#itab-${idx}-email .email-subject`);
-  const body = document.getElementById(`body-${idx}-${tab}`)?.textContent || "";
-  const subject = subjectEl?.textContent?.replace("Subject: ","") || "";
-  navigator.clipboard.writeText(`Subject: ${subject}\n\n${body}`)
-    .then(() => alert("Copied!")).catch(() => alert("Copy manually from the box above."));
-}
-
-function toggle(idx, name) {
-  const detail = document.getElementById(`detail-${idx}`);
-  const chev   = document.getElementById(`chev-${idx}`);
+// Auto-load orders when expanded
+async function toggle(clinicName) {
+  const sid = safeId(clinicName);
+  const detail = document.getElementById(`detail-${sid}`);
+  const chev   = document.getElementById(`chev-${sid}`);
   const isOpen = detail.classList.contains("open");
+
   document.querySelectorAll(".detail.open").forEach(d => {
     d.classList.remove("open");
     const id = d.id.replace("detail-","");
     const ch = document.getElementById(`chev-${id}`);
     if (ch) ch.textContent = "▼";
   });
-  if (!isOpen) { detail.classList.add("open"); chev.textContent = "▲"; }
+
+  if (!isOpen) {
+    detail.classList.add("open");
+    if (chev) chev.textContent = "▲";
+    // Auto-load orders tab
+    if (!detailCache[clinicName]) {
+      loadDetail(clinicName).then(d => {
+        renderOrders(d.detail || d, sid);
+        renderPitch(d.detail || d, sid);
+      }).catch(e => {
+        const el = document.getElementById(`itab-${sid}-orders`);
+        if (el) el.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed to load detail: ${esc(e.message)}</div>`;
+      });
+    } else {
+      const d = detailCache[clinicName];
+      renderOrders(d.detail || d, sid);
+      renderPitch(d.detail || d, sid);
+    }
+  }
+}
+
+// Geocode
+async function getCoords(address, city) {
+  const key = `${address}|${city}`;
+  if (geoCache[key] !== undefined) return geoCache[key];
+  try {
+    const res = await fetch(`${WORKER}/geocode?address=${encodeURIComponent(address||"")}&city=${encodeURIComponent(city||"")}`);
+    const data = await res.json();
+    geoCache[key] = data.coords || null;
+  } catch { geoCache[key] = null; }
+  return geoCache[key];
+}
+
+// Main map
+async function initMainMap() {
+  mainMapInited = true;
+  mainMap = L.map("main-map").setView([39.5,-98.35],4);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap contributors"}).addTo(mainMap);
+  for (const c of allClinics) {
+    const coords = await getCoords(c.address, c.cityStateZip);
+    if (!coords) { await new Promise(r=>setTimeout(r,200)); continue; }
+    const m = META[c.bucket]||META.never;
+    L.circleMarker([coords.lat,coords.lng],{radius:7,fillColor:m.color,color:"#fff",weight:1.5,fillOpacity:.85})
+      .addTo(mainMap)
+      .bindPopup(`<strong>${c.name}</strong><br>${m.label}<br>${c.daysSinceLast!=null?c.daysSinceLast+"d ago":"no orders"}`);
+    await new Promise(r=>setTimeout(r,200));
+  }
+}
+
+// Nearby map
+async function loadNearbyMap(clinicName) {
+  const sid = safeId(clinicName);
+  const clinic = allClinics.find(c=>c.name===clinicName);
+  if (!clinic) return;
+  const container = document.getElementById(`nearby-map-${sid}`);
+  if (!container) return;
+  container.innerHTML = `<span style="color:#aaa;font-size:13px">Geocoding…</span>`;
+
+  const coords = await getCoords(clinic.address, clinic.cityStateZip);
+  if (!coords) { container.innerHTML=`<span style="color:#aaa;font-size:13px">Could not geocode this address</span>`; return; }
+
+  container.innerHTML = "";
+  container.style.display = "block";
+  const map = L.map(container).setView([coords.lat,coords.lng],10);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap contributors"}).addTo(map);
+  L.circleMarker([coords.lat,coords.lng],{radius:9,fillColor:"#111",color:"#fff",weight:2,fillOpacity:1})
+    .addTo(map).bindPopup(`<strong>${clinicName}</strong> (this clinic)`).openPopup();
+
+  const stateMatch = (clinic.cityStateZip||"").match(/\b([A-Z]{2})\b/);
+  const state = stateMatch ? stateMatch[1] : "";
+  const nearby = allClinics.filter(c => c.name!==clinicName && state && (c.cityStateZip||"").includes(state)).slice(0,12);
+
+  for (const nc of nearby) {
+    const nc2 = await getCoords(nc.address, nc.cityStateZip);
+    if (!nc2) { await new Promise(r=>setTimeout(r,150)); continue; }
+    const m = META[nc.bucket]||META.never;
+    L.circleMarker([nc2.lat,nc2.lng],{radius:6,fillColor:m.color,color:"#fff",weight:1.5,fillOpacity:.8})
+      .addTo(map).bindPopup(`<strong>${nc.name}</strong><br>${m.label}`);
+    await new Promise(r=>setTimeout(r,200));
+  }
+}
+
+// Email
+function buildEmailSection(c) {
+  const first = (c.contact||"there").split(" ")[0];
+  const emails = {
+    a: { subject:"Quick question", body:`Hey ${first},\n\nQuick question, what happened? Looking through old records I can see your clinic ordered compounded medications from us in the past but haven't ordered again in some time which makes me think one of three things, pricing was too high, you didn't like your sales rep, or you've hit the lottery and retired :)\n\nHoping it's the 3rd option but would love the opportunity to learn what happened.\n\nJP\nPetScript Pharmacy\njp@petscript.net` },
+    b: { subject:"Checking in", body:`Hey ${first},\n\nJust checking in — it's been ${c.daysSinceLast!=null?c.daysSinceLast+" days":"a while"} since your last order. Did something change on your end, or can I help get you resupplied?\n\nNo pressure, just want to make sure we're taking care of you.\n\nJP\nPetScript Pharmacy\njp@petscript.net` },
+    c: { subject:"Still compounding with us?", body:`Hey ${first},\n\nSaw it's been a while since your last order. Are you still sourcing compounded medications?\n\nIf pricing or turnaround was the issue I can fix it. If you found a better source I'd love to know why.\n\nJP\nPetScript Pharmacy\njp@petscript.net` },
+  };
+  let html = `<div class="email-section"><div class="etabs">
+    <button class="etab active" onclick="switchEmail('${safeId(c.name)}','a',this)">Win-back</button>
+    <button class="etab" onclick="switchEmail('${safeId(c.name)}','b',this)">Check-in</button>
+    <button class="etab" onclick="switchEmail('${safeId(c.name)}','c',this)">Direct</button>
+  </div>`;
+  ["a","b","c"].forEach(k => {
+    html += `<div id="em-${safeId(c.name)}-${k}" style="display:${k==="a"?"block":"none"}">
+      <div class="email-subject">Subject: ${esc(emails[k].subject)}</div>
+      <div class="email-body" id="emb-${safeId(c.name)}-${k}">${esc(emails[k].body)}</div>
+      <button class="copy-btn" onclick="copyEmail('${safeId(c.name)}','${k}','${esc(emails[k].subject).replace(/'/g,"\\'")}')">📋 Copy</button>
+    </div>`;
+  });
+  return html + `</div>`;
+}
+
+function switchEmail(sid, tab, btn) {
+  const section = document.getElementById(`itab-${sid}-email`);
+  section.querySelectorAll(".etab").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  ["a","b","c"].forEach(k => { const el=document.getElementById(`em-${sid}-${k}`); if(el) el.style.display=k===tab?"block":"none"; });
+}
+
+function copyEmail(sid, tab, subject) {
+  const body = document.getElementById(`emb-${sid}-${tab}`)?.textContent || "";
+  navigator.clipboard.writeText(`Subject: ${subject}\n\n${body}`).then(()=>alert("Copied!")).catch(()=>alert("Copy manually."));
 }
 
 function show(s) {
-  document.getElementById("stateLoading").style.display = s==="loading" ? "block" : "none";
-  document.getElementById("stateError").style.display   = s==="error"   ? "block" : "none";
-  document.getElementById("cards").style.display        = s==="ready"   ? "grid"  : "none";
-  document.getElementById("filters").style.display      = s==="ready"   ? "flex"  : "none";
-  document.getElementById("clinicList").style.display   = s==="ready"   ? "flex"  : "none";
-  document.getElementById("rerollBtn").style.display    = s==="ready"   ? ""      : "none";
+  document.getElementById("stateLoading").style.display = s==="loading"?"block":"none";
+  document.getElementById("stateError").style.display   = s==="error"?"block":"none";
+  document.getElementById("cards").style.display        = s==="ready"?"grid":"none";
+  document.getElementById("filters").style.display      = s==="ready"?"flex":"none";
+  document.getElementById("clinicList").style.display   = s==="ready"?"flex":"none";
+  document.getElementById("rerollBtn").style.display    = s==="ready"?"":"none";
 }
 
 load();
