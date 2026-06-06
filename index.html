@@ -138,6 +138,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
   </div>
 </div>
 
+<!-- Nudge banner -->
+<div id="nudgeBanner" style="display:none;background:#FEF2F2;border-bottom:1px solid #FCA5A5;padding:10px 24px;">
+  <div style="font-size:12px;font-weight:600;color:#991B1B;margin-bottom:6px">⏰ Follow-up reminders</div>
+</div>
+
 <!-- Search bar -->
 <div class="search-bar">
   <input class="search-input" type="text" id="searchInput" placeholder="Search clinics by name, contact, email…" oninput="applySearch(this.value)">
@@ -573,10 +578,9 @@ async function loadNearbyMap(sid,clinicName) {
 
 // ── Contact log ────────────────────────────────────────────────
 function logContact(clinicName, type) {
-  const entry={name:clinicName,type,date:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}),ts:Date.now()};
+  const entry={name:clinicName,type,date:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}),ts:Date.now(),status:"sent"};
   contactLog.push(entry);
   localStorage.setItem("ps_log",JSON.stringify(contactLog));
-  // Refresh date column in list
   renderList();
 }
 
@@ -672,27 +676,63 @@ function copyEmail(sid,tab,subject) {
   navigator.clipboard.writeText(`Subject: ${subject}\n\n${body}`).then(()=>alert("Copied!")).catch(()=>alert("Copy manually."));
 }
 
-// ── Gmail draft (Phase B — placeholder, Phase A wires it up) ──
+// ── Gmail draft / send tracking ───────────────────────────────
 async function createGmailDraft(sid, tab, email, clinicName) {
   const btn=document.getElementById(`gmailbtn-${sid}-${tab}`);
   const tag=document.getElementById(`drafted-${sid}-${tab}`);
   if (!email) { alert("No email address on file for this clinic."); return; }
-  btn.disabled=true; btn.textContent="Creating…";
+  btn.disabled=true; btn.textContent="Opening…";
   try {
-    const subject=document.getElementById(`itab-${sid}-email`).querySelector(".email-subject")?.textContent?.replace("Subject: ","")||"";
+    const subjectEl=document.querySelector(`#em-${sid}-${tab} .email-subject`);
+    const subject=subjectEl?.textContent?.replace("Subject: ","")||"";
     const body=document.getElementById(`emb-${sid}-${tab}`)?.textContent||"";
-    // Phase A will call the worker route here
-    // For now: open Gmail compose in new tab as fallback
     const gmailUrl=`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     window.open(gmailUrl,"_blank");
-    // Log the contact
-    logContact(clinicName,"Email draft");
+    // Log as sent
+    const entry={name:clinicName,type:"Email sent",date:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}),ts:Date.now(),email,subject,status:"sent",nudgeDue:Date.now()+(7*86400000)};
+    contactLog.push(entry);
+    localStorage.setItem("ps_log",JSON.stringify(contactLog));
     btn.style.display="none";
     tag.style.display="";
+    tag.textContent="✓ Sent";
+    tag.style.color="#1D9E75";
+    renderList();
+    checkNudges();
   } catch(e) {
     alert("Failed: "+e.message);
     btn.disabled=false; btn.textContent="✉ Create Gmail draft";
   }
+}
+
+// ── Nudge checker ──────────────────────────────────────────────
+function checkNudges() {
+  const now=Date.now();
+  const nudges=contactLog.filter(l=>l.status==="sent"&&l.nudgeDue&&l.nudgeDue<=now);
+  if (!nudges.length) return;
+  const el=document.getElementById("nudgeBanner");
+  if (!el) return;
+  el.style.display="block";
+  el.innerHTML=nudges.map(n=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #FCA5A5">
+      <span style="flex:1;font-size:12px;font-weight:500">${esc(n.name)}</span>
+      <span style="font-size:11px;color:#991B1B">No reply in 7 days</span>
+      <button class="btn btn-sm btn-outline" onclick="dismissNudge(${n.ts})">Dismiss</button>
+      <button class="btn btn-sm btn-dark" onclick="openNudgeEmail('${esc(n.email||"")}','${esc(n.name).replace(/'/g,"\\'")}')">Send nudge</button>
+    </div>`).join("");
+}
+
+function dismissNudge(ts) {
+  const idx=contactLog.findIndex(l=>l.ts===ts);
+  if (idx>=0){contactLog[idx].status="dismissed";localStorage.setItem("ps_log",JSON.stringify(contactLog));}
+  checkNudges();
+}
+
+function openNudgeEmail(email, clinicName) {
+  const first=(clinicName||"there").split(" ")[0];
+  const subject=`Following up`;
+  const body=`Hey ${first},\n\nJust wanted to follow up on my last email — did you get a chance to see it?\n\nJP\nPetScript | jp@petscript.net`;
+  window.open(`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`,"_blank");
+  dismissNudge(contactLog.find(l=>l.email===email&&l.status==="sent")?.ts);
 }
 
 function show(s) {
@@ -705,6 +745,7 @@ function show(s) {
 }
 
 load();
+checkNudges();
 </script>
 </body>
 </html>
