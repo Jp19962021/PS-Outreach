@@ -431,6 +431,7 @@ function buildDetailShell(c,m) {
       <button class="itab active" onclick="switchInner('${sid}','${cname}','orders',this)">Orders</button>
       <button class="itab" onclick="switchInner('${sid}','${cname}','pitch',this)">Pitch</button>
       <button class="itab" onclick="switchInner('${sid}','${cname}','nearby',this)">Nearby</button>
+      <button class="itab" onclick="switchInner('${sid}','${cname}','invoices',this)">Invoices</button>
       <button class="itab" onclick="switchInner('${sid}','${cname}','email',this)">Email drafts</button>
     </div>
     <div class="itab-content active" id="itab-${sid}-orders">
@@ -442,6 +443,7 @@ function buildDetailShell(c,m) {
         <span style="color:#aaa;font-size:13px">Click Nearby to load</span>
       </div>
     </div>
+    <div class="itab-content" id="itab-${sid}-invoices"><div class="inv-loading">Click Invoices to load</div></div>
     <div class="itab-content" id="itab-${sid}-email">${buildEmailSection(c)}</div>`;
 }
 
@@ -504,6 +506,7 @@ function switchInner(sid,clinicName,tab,btn) {
       if(el)el.innerHTML=`<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`;
     });
   }
+  if (tab==="invoices") loadInvoices(sid, clinicName);
   if (tab==="nearby") loadNearbyMap(sid,clinicName);
 }
 
@@ -524,6 +527,31 @@ function toggle(sid,clinicName) {
       const el=document.getElementById(`itab-${sid}-orders`);
       if(el)el.innerHTML=`<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`;
     });
+  }
+}
+
+async function loadInvoices(sid, clinicName) {
+  const el = document.getElementById(`itab-${sid}-invoices`);
+  if (!el || el.dataset.loaded) return;
+  el.dataset.loaded = "1";
+  el.innerHTML = `<div class="inv-loading">Loading from Zoho…</div>`;
+  try {
+    const res = await fetch(`${WORKER}/invoices?name=${encodeURIComponent(clinicName)}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    const invoices = data.invoices || [];
+    if (!invoices.length) { el.innerHTML=`<div class="inv-loading">No invoices found in Zoho for this clinic.</div>`; return; }
+    el.innerHTML = invoices.slice(0,15).map(inv => {
+      const sc = inv.status==="overdue"?"inv-overdue":inv.status==="paid"?"inv-paid":"inv-open";
+      return `<div class="inv-row">
+        <span class="inv-num">${esc(inv.invoice_number)}</span>
+        <span class="inv-date">${esc(inv.invoice_date)}</span>
+        <span class="inv-status ${sc}">${esc(inv.status)}</span>
+        <span class="inv-amount">${fmt(inv.total)}</span>
+      </div>`;
+    }).join("");
+  } catch(e) {
+    el.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`;
   }
 }
 
