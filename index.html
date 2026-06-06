@@ -11,12 +11,21 @@
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #F4F4F4; color: #111; }
 .header { background: #fff; border-bottom: 1px solid #E0E0E0; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 1000; }
 .header h1 { font-size: 17px; font-weight: 700; }
-.header .sub { font-size: 11px; color: #999; margin-top: 2px; }
-.hdr-right { display: flex; gap: 8px; }
+.sub { font-size: 11px; color: #999; margin-top: 2px; }
+.hdr-right { display: flex; gap: 8px; align-items: center; }
 .btn { font-size: 12px; padding: 7px 14px; border-radius: 7px; border: none; cursor: pointer; font-weight: 500; }
 .btn-dark { background: #111; color: #fff; }
-.btn-dark:disabled { opacity: 0.4; }
+.btn-dark:disabled { opacity: 0.4; cursor:default; }
 .btn-outline { background: #fff; color: #333; border: 1px solid #D0D0D0; }
+.btn-red { background: #FEF2F2; color: #991B1B; border: 1px solid #FCA5A5; }
+.btn-green { background: #E1F5EE; color: #085041; border: none; }
+.btn-sm { font-size: 11px; padding: 4px 10px; }
+
+/* Search bar */
+.search-bar { padding: 10px 24px; background: #fff; border-bottom: 1px solid #E0E0E0; }
+.search-input { width: 100%; max-width: 400px; font-size: 13px; padding: 8px 14px; border: 1px solid #D0D0D0; border-radius: 8px; outline: none; }
+.search-input:focus { border-color: #111; }
+
 .main-tabs { display: flex; background: #fff; border-bottom: 1px solid #E0E0E0; padding: 0 24px; }
 .main-tab { font-size: 13px; padding: 10px 16px; cursor: pointer; border-bottom: 2px solid transparent; color: #666; font-weight: 500; }
 .main-tab.active { color: #111; border-bottom-color: #111; }
@@ -28,22 +37,25 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .card-label { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: #999; margin-bottom: 3px; }
 .card-value { font-size: 24px; font-weight: 700; }
 .card-sub { font-size: 10px; color: #aaa; margin-top: 3px; }
-.filters { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+.filters { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
 .pill { font-size: 12px; padding: 5px 12px; border-radius: 20px; border: none; cursor: pointer; background: #E8E8E8; color: #555; }
 .pill.active { background: #111; color: #fff; font-weight: 600; }
 .list { display: flex; flex-direction: column; gap: 7px; }
 .clinic-card { background: #fff; border: 1px solid #E5E5E5; border-radius: 10px; overflow: hidden; }
-.clinic-row { display: flex; align-items: center; gap: 10px; padding: 11px 14px; cursor: pointer; }
+.clinic-card.ignored { opacity: 0.4; }
+.clinic-row { display: flex; align-items: center; gap: 8px; padding: 10px 14px; cursor: pointer; }
 .clinic-row:hover { background: #FAFAFA; }
 .num { font-size: 11px; color: #ccc; min-width: 20px; text-align: right; flex-shrink: 0; }
 .badge { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
 .clinic-info { flex: 1; min-width: 0; }
 .clinic-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .clinic-sub { font-size: 11px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
-.clinic-right { text-align: right; flex-shrink: 0; min-width: 90px; }
-.clinic-days { font-size: 13px; font-weight: 700; }
+.clinic-date { font-size: 11px; color: #aaa; flex-shrink: 0; min-width: 80px; text-align: right; }
+.clinic-days { font-size: 12px; font-weight: 700; }
 .clinic-ltv { font-size: 10px; color: #aaa; }
 .chevron { font-size: 10px; color: #ccc; flex-shrink: 0; }
+.skip-btn { font-size: 10px; padding: 3px 8px; border-radius: 6px; border: 1px solid #E0E0E0; background: #fff; color: #aaa; cursor: pointer; flex-shrink: 0; }
+.skip-btn:hover { background: #FEF2F2; color: #991B1B; border-color: #FCA5A5; }
 .detail { display: none; border-top: 1px solid #F0F0F0; }
 .detail.open { display: block; }
 .detail-inner { padding: 16px; background: #FAFAFA; }
@@ -69,7 +81,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .prod-name { font-weight: 500; color: #111; line-height: 1.4; }
 .lost { color: #C0392B; font-weight: 600; }
 .active-tag { color: #1D9E75; font-weight: 600; }
-.stopped-tag { font-size: 10px; background: #FEF9E7; color: #B7770D; padding: 1px 6px; border-radius: 4px; margin-left: 4px; }
 .pitch-item { display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; background: #fff; border: 1px solid #E8E8E8; border-radius: 8px; margin-bottom: 6px; }
 .pitch-name { font-size: 12px; font-weight: 500; }
 .pitch-rev { font-size: 11px; color: #1D9E75; font-weight: 600; }
@@ -83,13 +94,27 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .inv-overdue { background: #FDECEA; color: #C0392B; }
 .inv-amount { margin-left: auto; font-weight: 600; }
 .inv-loading { font-size: 12px; color: #aaa; padding: 8px 0; }
+
+/* Contact log */
+.log-row { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid #F5F5F5; font-size: 12px; }
+.log-row:last-child { border-bottom: none; }
+.log-date { color: #aaa; min-width: 80px; }
+.log-name { flex: 1; font-weight: 500; }
+.log-type { font-size: 10px; padding: 2px 7px; border-radius: 10px; background: #E8F0FD; color: #1A5CA8; font-weight: 600; }
+
+/* Email */
 .email-section { background: #fff; border: 1px solid #E8E8E8; border-radius: 8px; padding: 14px; }
 .etabs { display: flex; gap: 6px; margin-bottom: 12px; }
 .etab { font-size: 11px; padding: 4px 10px; border-radius: 6px; border: 1px solid #E0E0E0; cursor: pointer; background: #fff; }
 .etab.active { background: #111; color: #fff; border-color: #111; }
 .email-subject { font-size: 12px; font-weight: 600; color: #555; margin-bottom: 8px; }
 .email-body { font-size: 13px; color: #333; white-space: pre-wrap; line-height: 1.7; background: #FAFAFA; border-radius: 6px; padding: 12px; border: 1px solid #F0F0F0; }
-.copy-btn { margin-top: 10px; font-size: 11px; padding: 5px 12px; cursor: pointer; border-radius: 6px; border: 1px solid #D0D0D0; background: #fff; }
+.email-actions { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+.copy-btn { font-size: 11px; padding: 5px 12px; cursor: pointer; border-radius: 6px; border: 1px solid #D0D0D0; background: #fff; }
+.gmail-btn { font-size: 11px; padding: 5px 14px; cursor: pointer; border-radius: 6px; border: none; background: #EA4335; color: #fff; font-weight: 500; }
+.gmail-btn:disabled { opacity: 0.5; cursor: default; }
+.drafted-tag { font-size: 11px; color: #1D9E75; }
+
 #main-map { height: 580px; border-radius: 10px; border: 1px solid #E0E0E0; }
 .map-legend { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; font-size: 12px; color: #555; align-items: center; }
 .ldot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; }
@@ -97,10 +122,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 .error-box { background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 10px; padding: 16px; color: #991B1B; font-size: 13px; }
 .footer { text-align: center; font-size: 11px; color: #ccc; margin-top: 20px; padding-bottom: 40px; }
 .skeleton { background: #F0F0F0; border-radius: 6px; height: 14px; margin-bottom: 8px; animation: pulse 1.5s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
+@keyframes pulse { 0%,100%{opacity:1}50%{opacity:.5} }
 </style>
 </head>
 <body>
+
 <div class="header">
   <div>
     <h1>PetScript — Daily Outreach</h1>
@@ -112,11 +138,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
   </div>
 </div>
 
-<div class="main-tabs">
-  <div class="main-tab active" onclick="switchMain('list',this)">📋 Today's 50</div>
-  <div class="main-tab" onclick="switchMain('map',this)">🗺 All clinics map</div>
+<!-- Search bar -->
+<div class="search-bar">
+  <input class="search-input" type="text" id="searchInput" placeholder="Search clinics by name, contact, email…" oninput="applySearch(this.value)">
 </div>
 
+<div class="main-tabs">
+  <div class="main-tab active" onclick="switchMain('list',this)">📋 Today's 50</div>
+  <div class="main-tab" onclick="switchMain('log',this)">📋 Contact log</div>
+  <div class="main-tab" onclick="switchMain('map',this)">🗺 Map</div>
+</div>
+
+<!-- LIST TAB -->
 <div id="list-tab-content" class="tab-content active">
   <div class="main">
     <div class="cards" id="cards" style="display:none">
@@ -132,14 +165,29 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
       <button class="pill" onclick="setFilter('dark')" data-f="dark">Gone dark</button>
       <button class="pill" onclick="setFilter('lapsed')" data-f="lapsed">Lapsed</button>
       <button class="pill" onclick="setFilter('dropped')" data-f="dropped">Dropped SKU</button>
+      <button class="pill" onclick="setFilter('ignored')" data-f="ignored" style="margin-left:auto">🚫 Ignored</button>
     </div>
-    <div id="stateLoading" class="loading">Loading clinic data…<br><small style="color:#bbb;font-size:12px;display:block;margin-top:8px">First load may take 15 seconds while data is cached</small></div>
+    <div id="stateLoading" class="loading">Loading clinic data…<br><small style="color:#bbb;font-size:12px;display:block;margin-top:8px">First load may take 15–20 seconds</small></div>
     <div id="stateError" class="error-box" style="display:none"><strong>Error:</strong> <span id="errMsg"></span><br><button class="btn btn-outline" style="margin-top:10px" onclick="load()">Retry</button></div>
     <div class="list" id="clinicList" style="display:none"></div>
     <div class="footer" id="footer"></div>
   </div>
 </div>
 
+<!-- LOG TAB -->
+<div id="log-tab-content" class="tab-content">
+  <div class="main">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div style="font-size:15px;font-weight:600">Contact log</div>
+      <button class="btn btn-outline btn-sm" onclick="clearLog()">Clear log</button>
+    </div>
+    <div id="logList" style="background:#fff;border-radius:10px;border:1px solid #E5E5E5;padding:14px">
+      <div class="inv-loading">No contacts logged yet.</div>
+    </div>
+  </div>
+</div>
+
+<!-- MAP TAB -->
 <div id="map-tab-content" class="tab-content">
   <div style="max-width:960px;margin:0 auto;padding:16px">
     <div class="map-legend">
@@ -149,7 +197,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
       <span><span class="ldot" style="background:#6B21A8"></span>Dropped SKU</span>
     </div>
     <div id="main-map"></div>
-    <div style="font-size:11px;color:#aaa;margin-top:8px">Pins load progressively via OpenStreetMap geocoding</div>
   </div>
 </div>
 
@@ -162,19 +209,38 @@ const META = {
   dropped: { label:"Dropped SKU",    color:"#6B21A8", bg:"#F3E8FF" },
 };
 
-let allClinics = [], currentFilter = "all", mainMap = null, mainMapInited = false;
+// ── State ─────────────────────────────────────────────────────
+let allClinics = [], currentFilter = "all", searchQuery = "";
+let mainMap = null, mainMapInited = false;
 const geoCache = {}, detailCache = {};
+let ignoredSet = new Set(JSON.parse(localStorage.getItem("ps_ignored")||"[]"));
+let contactLog = JSON.parse(localStorage.getItem("ps_log")||"[]");
+
+// ── Filter out pet owners (no company — looks like "First Last") ──
+function isPetOwner(c) {
+  const name = (c.name||"").trim();
+  // Skip if name has no spaces (single word) or looks like "First Last" with no clinic keywords
+  if (!name) return true;
+  const clinicKeywords = /clinic|hospital|vet|animal|pet|care|center|centre|services|practice|emergency|mobile|zoo|shelter|rescue|spca|humane|wildlife|equine|avian|exotic|farm|ranch|house|associates|group|partners|llc|inc|pllc|dba|medical|surgical/i;
+  if (clinicKeywords.test(name)) return false;
+  // If it's just two capitalized words (First Last pattern) with no clinic keywords, skip
+  if (/^[A-Z][a-z]+\s+[A-Z][a-z]+\*?$/.test(name)) return true;
+  return false;
+}
 
 document.getElementById("dateStr").textContent = new Date().toLocaleDateString("en-US",{weekday:"long",month:"long",day:"numeric",year:"numeric"});
 
+// ── Main tab switch ────────────────────────────────────────────
 function switchMain(tab, btn) {
-  document.querySelectorAll(".main-tab").forEach(t => t.classList.remove("active"));
-  document.querySelectorAll(".tab-content").forEach(t => t.classList.remove("active"));
+  document.querySelectorAll(".main-tab").forEach(t=>t.classList.remove("active"));
+  document.querySelectorAll(".tab-content").forEach(t=>t.classList.remove("active"));
   btn.classList.add("active");
   document.getElementById(`${tab}-tab-content`).classList.add("active");
-  if (tab === "map" && !mainMapInited && allClinics.length) initMainMap();
+  if (tab==="map" && !mainMapInited && allClinics.length) initMainMap();
+  if (tab==="log") renderLog();
 }
 
+// ── Load ───────────────────────────────────────────────────────
 async function load() {
   show("loading");
   document.getElementById("refreshBtn").disabled = true;
@@ -183,17 +249,21 @@ async function load() {
     if (!res.ok) throw new Error(`Worker returned ${res.status}`);
     const data = await res.json();
     if (data.error) throw new Error(data.error);
-    allClinics = data.clinics || [];
-    document.getElementById("cTotal").textContent   = allClinics.length;
+
+    // Filter pet owners, then apply ignore list
+    allClinics = (data.clinics||[]).filter(c => !isPetOwner(c));
+
+    const visible = allClinics.filter(c => !ignoredSet.has(c.name));
+    document.getElementById("cTotal").textContent   = visible.length;
     document.getElementById("cPool").textContent    = `${(data.total_eligible||0).toLocaleString()} eligible`;
-    document.getElementById("cNever").textContent   = data.counts?.never   || 0;
-    document.getElementById("cDark").textContent    = data.counts?.dark    || 0;
-    document.getElementById("cLapsed").textContent  = data.counts?.lapsed  || 0;
-    document.getElementById("cDropped").textContent = data.counts?.dropped || 0;
+    document.getElementById("cNever").textContent   = visible.filter(c=>c.bucket==="never").length;
+    document.getElementById("cDark").textContent    = visible.filter(c=>c.bucket==="dark").length;
+    document.getElementById("cLapsed").textContent  = visible.filter(c=>c.bucket==="lapsed").length;
+    document.getElementById("cDropped").textContent = visible.filter(c=>c.bucket==="dropped").length;
     document.getElementById("footer").textContent   = `Last synced: ${new Date(data.generated_at).toLocaleString()}`;
     updatePills();
     show("ready");
-    renderList(currentFilter);
+    renderList();
   } catch(e) {
     document.getElementById("errMsg").textContent = e.message;
     show("error");
@@ -202,67 +272,107 @@ async function load() {
 }
 
 function updatePills() {
-  const cnt = {all:allClinics.length,never:0,dark:0,lapsed:0,dropped:0};
-  allClinics.forEach(c => { if(cnt[c.bucket]!==undefined) cnt[c.bucket]++; });
-  document.querySelectorAll(".pill").forEach(p => {
-    const f = p.dataset.f;
-    p.textContent = f==="all" ? `All (${cnt.all})` : `${META[f]?.label||f} (${cnt[f]||0})`;
+  const visible = allClinics.filter(c=>!ignoredSet.has(c.name));
+  const cnt = {all:visible.length,never:0,dark:0,lapsed:0,dropped:0,ignored:ignoredSet.size};
+  visible.forEach(c=>{if(cnt[c.bucket]!==undefined)cnt[c.bucket]++;});
+  document.querySelectorAll(".pill").forEach(p=>{
+    const f=p.dataset.f;
+    if(f==="ignored") p.textContent=`🚫 Ignored (${cnt.ignored})`;
+    else if(f==="all") p.textContent=`All (${cnt.all})`;
+    else p.textContent=`${META[f]?.label||f} (${cnt[f]||0})`;
   });
 }
 
-function reroll() { allClinics = [...allClinics].sort(()=>Math.random()-0.5); renderList(currentFilter); }
+function reroll() { allClinics=[...allClinics].sort(()=>Math.random()-0.5); renderList(); }
 function setFilter(f) {
-  currentFilter = f;
-  document.querySelectorAll(".pill").forEach(p => p.classList.toggle("active",p.dataset.f===f));
-  renderList(f);
+  currentFilter=f;
+  document.querySelectorAll(".pill").forEach(p=>p.classList.toggle("active",p.dataset.f===f));
+  renderList();
 }
 
-const fmt = n => Number(n||0).toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0});
-const esc = s => String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function applySearch(q) { searchQuery=q.toLowerCase().trim(); renderList(); }
 
-function renderList(filter) {
-  const list = filter==="all" ? allClinics : allClinics.filter(c=>c.bucket===filter);
-  const el = document.getElementById("clinicList");
-  el.innerHTML = "";
-  if (!list.length) { el.style.display="none"; return; }
-  el.style.display = "flex";
-  list.forEach((c,i) => {
-    const m = META[c.bucket]||META.never;
-    const div = document.createElement("div");
-    div.className = "clinic-card";
-    div.innerHTML = `
-      <div class="clinic-row" onclick="toggle('${esc(c.name).replace(/'/g,"\\'")}')">
+// ── Ignore ─────────────────────────────────────────────────────
+function ignoreClinic(name, btn) {
+  ignoredSet.add(name);
+  localStorage.setItem("ps_ignored", JSON.stringify([...ignoredSet]));
+  btn.closest(".clinic-card").style.opacity="0.3";
+  setTimeout(()=>{ btn.closest(".clinic-card").remove(); updatePills(); }, 400);
+}
+function unignoreClinic(name) {
+  ignoredSet.delete(name);
+  localStorage.setItem("ps_ignored", JSON.stringify([...ignoredSet]));
+  renderList(); updatePills();
+}
+
+// ── Render list ────────────────────────────────────────────────
+function renderList() {
+  let list;
+  if (currentFilter==="ignored") {
+    list = allClinics.filter(c=>ignoredSet.has(c.name));
+  } else {
+    list = allClinics.filter(c=>!ignoredSet.has(c.name));
+    if (currentFilter!=="all") list=list.filter(c=>c.bucket===currentFilter);
+  }
+  if (searchQuery) {
+    list=list.filter(c=>
+      c.name.toLowerCase().includes(searchQuery)||
+      (c.contact||"").toLowerCase().includes(searchQuery)||
+      (c.email||"").toLowerCase().includes(searchQuery)
+    );
+  }
+
+  const el=document.getElementById("clinicList");
+  el.innerHTML="";
+  if (!list.length){el.style.display="none";return;}
+  el.style.display="flex";
+
+  list.forEach((c,i)=>{
+    const m=META[c.bucket]||META.never;
+    const isIgnored=ignoredSet.has(c.name);
+    const contacted=contactLog.filter(l=>l.name===c.name);
+    const lastContact=contacted.length?contacted[contacted.length-1]:null;
+    const div=document.createElement("div");
+    div.className="clinic-card"+(isIgnored?" ignored":"");
+    div.innerHTML=`
+      <div class="clinic-row" onclick="toggle('${safeId(c.name)}','${esc(c.name).replace(/'/g,"\\'")}')">
         <div class="num">${i+1}</div>
         <div class="badge" style="background:${m.bg};color:${m.color}">${m.label}</div>
         <div class="clinic-info">
           <div class="clinic-name">${esc(c.name)}</div>
           <div class="clinic-sub">${esc(c.repName||"—")} · ${esc(c.contact||"—")}${c.email?" · "+esc(c.email):""}</div>
         </div>
-        <div class="clinic-right">
-          ${c.daysSinceLast!=null
-            ? `<div class="clinic-days" style="color:${m.color}">${c.daysSinceLast}d ago</div>`
-            : `<div class="clinic-days" style="color:#bbb">no orders on record</div>`}
-          ${c.spend>0?`<div class="clinic-ltv">${fmt(c.spend)} lifetime</div>`:""}
+        <div class="clinic-date">
+          ${c.lastOrderDate?`<div style="font-size:11px;color:#888">${c.lastOrderDate}</div>`:""}
+          ${c.daysSinceLast!=null?`<div class="clinic-days" style="color:${m.color}">${c.daysSinceLast}d ago</div>`:`<div style="font-size:11px;color:#bbb">no orders</div>`}
+          ${lastContact?`<div style="font-size:10px;color:#1D9E75">✉ ${lastContact.date}</div>`:""}
         </div>
-        <div class="chevron" id="chev-${esc(c.name).replace(/[^a-z0-9]/gi,'_')}">▼</div>
+        <button class="skip-btn" onclick="event.stopPropagation();${isIgnored?`unignoreClinic('${esc(c.name).replace(/'/g,"\\'")}')`:`ignoreClinic('${esc(c.name).replace(/'/g,"\\'")}',this)`}" title="${isIgnored?"Restore":"Skip/ignore"}">
+          ${isIgnored?"↩":"✕"}
+        </button>
+        <div class="chevron" id="chev-${safeId(c.name)}">▼</div>
       </div>
-      <div class="detail" id="detail-${esc(c.name).replace(/[^a-z0-9]/gi,'_')}">
+      <div class="detail" id="detail-${safeId(c.name)}">
         <div class="detail-inner">
-          ${buildDetailShell(c, m)}
+          ${buildDetailShell(c,m)}
         </div>
       </div>`;
     el.appendChild(div);
   });
 }
 
-function safeId(name) { return String(name).replace(/[^a-z0-9]/gi,"_"); }
+const fmt=n=>Number(n||0).toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0});
+const esc=s=>String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const safeId=n=>String(n).replace(/[^a-z0-9]/gi,"_");
 
-function buildDetailShell(c, m) {
-  const ytdDelta = c.lastYtdSpend > 0 ? ((c.ytdSpend - c.lastYtdSpend)/c.lastYtdSpend*100).toFixed(0) : null;
-  const deltaHtml = ytdDelta!==null
-    ? `<div class="spend-delta ${ytdDelta>=0?"up":"down"}">${ytdDelta>=0?"▲":"▼"} ${Math.abs(ytdDelta)}% vs last year</div>`
-    : `<div class="spend-delta" style="color:#aaa">No prior year data</div>`;
-
+// ── Detail shell ───────────────────────────────────────────────
+function buildDetailShell(c,m) {
+  const ytdDelta=c.lastYtdSpend>0?((c.ytdSpend-c.lastYtdSpend)/c.lastYtdSpend*100).toFixed(0):null;
+  const deltaHtml=ytdDelta!==null
+    ?`<div class="spend-delta ${ytdDelta>=0?"up":"down"}">${ytdDelta>=0?"▲":"▼"} ${Math.abs(ytdDelta)}% vs last year</div>`
+    :`<div class="spend-delta" style="color:#aaa">No prior year data</div>`;
+  const sid=safeId(c.name);
+  const cname=esc(c.name).replace(/'/g,"\\'");
   return `
     ${c.repName?`<div class="rep-badge">Rep: ${esc(c.repName)}</div>`:""}
     <div class="contact-chips">
@@ -277,254 +387,285 @@ function buildDetailShell(c, m) {
       <div class="spend-box"><div class="spend-label">Lifetime</div><div class="spend-value">${fmt(c.spend)}</div></div>
     </div>
     <div class="inner-tabs">
-      <button class="itab active" onclick="switchInner('${esc(c.name).replace(/'/g,"\\'")}','orders',this)">Orders & products</button>
-      <button class="itab" onclick="switchInner('${esc(c.name).replace(/'/g,"\\'")}','pitch',this)">Pitch</button>
-      <button class="itab" onclick="switchInner('${esc(c.name).replace(/'/g,"\\'")}','nearby',this)">Nearby</button>
-      <button class="itab" onclick="switchInner('${esc(c.name).replace(/'/g,"\\'")}','invoices',this)">Invoices</button>
-      <button class="itab" onclick="switchInner('${esc(c.name).replace(/'/g,"\\'")}','email',this)">Email drafts</button>
+      <button class="itab active" onclick="switchInner('${sid}','${cname}','orders',this)">Orders</button>
+      <button class="itab" onclick="switchInner('${sid}','${cname}','pitch',this)">Pitch</button>
+      <button class="itab" onclick="switchInner('${sid}','${cname}','nearby',this)">Nearby</button>
+      <button class="itab" onclick="switchInner('${sid}','${cname}','email',this)">Email drafts</button>
     </div>
-    <div class="itab-content active" id="itab-${safeId(c.name)}-orders">
-      <div class="skeleton" style="width:60%"></div><div class="skeleton" style="width:80%"></div><div class="skeleton" style="width:50%"></div>
+    <div class="itab-content active" id="itab-${sid}-orders">
+      <div class="skeleton" style="width:60%"></div><div class="skeleton" style="width:80%"></div>
     </div>
-    <div class="itab-content" id="itab-${safeId(c.name)}-pitch"><div class="inv-loading">Loading…</div></div>
-    <div class="itab-content" id="itab-${safeId(c.name)}-nearby">
-      <div id="nearby-map-${safeId(c.name)}" style="height:260px;border-radius:8px;border:1px solid #E8E8E8;background:#f8f8f8;display:flex;align-items:center;justify-content:center;margin-bottom:8px">
-        <span style="color:#aaa;font-size:13px">Click Nearby to load map</span>
+    <div class="itab-content" id="itab-${sid}-pitch"><div class="inv-loading">Loading…</div></div>
+    <div class="itab-content" id="itab-${sid}-nearby">
+      <div id="nearby-map-${sid}" style="height:260px;border-radius:8px;border:1px solid #E8E8E8;background:#f8f8f8;display:flex;align-items:center;justify-content:center;margin-bottom:8px">
+        <span style="color:#aaa;font-size:13px">Click Nearby to load</span>
       </div>
     </div>
-    <div class="itab-content" id="itab-${safeId(c.name)}-invoices"><div class="inv-loading">Click Invoices to load from Zoho</div></div>
-    <div class="itab-content" id="itab-${safeId(c.name)}-email">${buildEmailSection(c)}</div>`;
+    <div class="itab-content" id="itab-${sid}-email">${buildEmailSection(c)}</div>`;
 }
 
+// ── Load + render detail ───────────────────────────────────────
 async function loadDetail(clinicName) {
   if (detailCache[clinicName]) return detailCache[clinicName];
-  const res = await fetch(`${WORKER}/clinic-detail?name=${encodeURIComponent(clinicName)}`);
-  const data = await res.json();
+  const res=await fetch(`${WORKER}/clinic-detail?name=${encodeURIComponent(clinicName)}`);
+  const data=await res.json();
   if (data.error) throw new Error(data.error);
-  // support both {clinic:...} and direct clinic object
-  const clinic = data.clinic || data;
-  detailCache[clinicName] = clinic;
+  const clinic=data.clinic||data.detail||data;
+  detailCache[clinicName]=clinic;
   return clinic;
 }
 
-function renderOrders(clinic, sid) {
-  const el = document.getElementById(`itab-${sid}-orders`);
+function renderOrders(clinic,sid) {
+  const el=document.getElementById(`itab-${sid}-orders`);
   if (!el) return;
-  const dropped = clinic.droppedProducts || [];
-  const active  = clinic.activeProducts  || [];
-  let html = "";
-  if (dropped.length) {
-    html += `<div class="detail-section"><div class="dl">Stopped ordering (${dropped.length})</div>
+  const products=clinic.products||[];
+  const stopped=products.filter(p=>p.status==="Stopped"||p.status==="Past Only");
+  const active=products.filter(p=>p.status==="Active");
+  let html="";
+  if (stopped.length) {
+    html+=`<div class="detail-section"><div class="dl">Stopped ordering (${stopped.length})</div>
       <table class="prod-table"><thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>Lost revenue</th></tr></thead><tbody>`;
-    dropped.slice(0,8).forEach(p => {
-      html += `<tr>
-        <td><div class="prod-name">${esc(p.productName)}</div></td>
-        <td style="color:#888">${p.orderCount}</td>
-        <td style="color:#888">${p.lastOrderDate} (${p.daysSince}d ago)</td>
-        <td class="lost">${fmt(p.totalSpend)}</td>
-      </tr>`;
+    stopped.slice(0,8).forEach(p=>{
+      html+=`<tr><td><div class="prod-name">${esc(p.product)}</div></td><td style="color:#888">${p.order_count||"—"}</td><td style="color:#888">${p.last_order_date||"—"}</td><td class="lost">${fmt(p.lost_revenue||p.total_revenue)}</td></tr>`;
     });
-    html += `</tbody></table></div>`;
+    html+=`</tbody></table></div>`;
   }
   if (active.length) {
-    html += `<div class="detail-section"><div class="dl">Still ordering (${active.length})</div>
-      <table class="prod-table"><thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>YTD</th></tr></thead><tbody>`;
-    active.slice(0,6).forEach(p => {
-      html += `<tr>
-        <td><div class="prod-name">${esc(p.productName)}</div></td>
-        <td style="color:#888">${p.orderCount}</td>
-        <td style="color:#888">${p.lastOrderDate}</td>
-        <td class="active-tag">${fmt(p.ytdSpend)}</td>
-      </tr>`;
+    html+=`<div class="detail-section"><div class="dl">Still ordering (${active.length})</div>
+      <table class="prod-table"><thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>Revenue</th></tr></thead><tbody>`;
+    active.slice(0,6).forEach(p=>{
+      html+=`<tr><td><div class="prod-name">${esc(p.product)}</div></td><td style="color:#888">${p.order_count||"—"}</td><td style="color:#888">${p.last_order_date||"—"}</td><td class="active-tag">${fmt(p.total_revenue)}</td></tr>`;
     });
-    html += `</tbody></table></div>`;
+    html+=`</tbody></table></div>`;
   }
-  if (!dropped.length && !active.length) html = `<div class="inv-loading">No product history found.</div>`;
-  el.innerHTML = html;
+  if (!stopped.length&&!active.length) html=`<div class="inv-loading">No product history in data.js for this clinic.</div>`;
+  el.innerHTML=html;
 }
 
-function renderPitch(clinic, sid) {
-  const el = document.getElementById(`itab-${sid}-pitch`);
+function renderPitch(clinic,sid) {
+  const el=document.getElementById(`itab-${sid}-pitch`);
   if (!el) return;
-  const pitches = clinic.pitchProducts || [];
-  if (!pitches.length) { el.innerHTML = `<div class="inv-loading">No pitch opportunities — this clinic has ordered all top products.</div>`; return; }
-  el.innerHTML = `<div class="dl" style="margin-bottom:8px">Top products this clinic hasn't ordered (by market YTD revenue)</div>` +
-    pitches.map(p => `<div class="pitch-item"><div class="pitch-name">${esc(p.name||p.productName||"")}</div><div class="pitch-rev">${fmt(p.ytd||p.ytdRevenue)} YTD market</div></div>`).join("");
+  const pitches=clinic.pitch_opportunities||[];
+  if (!pitches.length){el.innerHTML=`<div class="inv-loading">No pitch opportunities — clinic has ordered everything.</div>`;return;}
+  el.innerHTML=`<div class="dl" style="margin-bottom:8px">Top products this clinic hasn't ordered</div>`+
+    pitches.map(p=>`<div class="pitch-item"><div class="pitch-name">${esc(p.product||"")}</div><div class="pitch-rev">${fmt(p.total_market_revenue)} market</div></div>`).join("");
 }
 
-function renderInvoices(invoices, sid) {
-  const el = document.getElementById(`itab-${sid}-invoices`);
-  if (!el) return;
-  if (!invoices.length) { el.innerHTML = `<div class="inv-loading">No open/overdue invoices in Zoho for this clinic.</div>`; return; }
-  el.innerHTML = invoices.slice(0,10).map(inv => {
-    const sc = inv.status==="overdue"?"inv-overdue":inv.status==="paid"?"inv-paid":"inv-open";
-    return `<div class="inv-row">
-      <span class="inv-num">${esc(inv.invoice_number)}</span>
-      <span class="inv-date">${esc(inv.invoice_date)}</span>
-      <span class="inv-status ${sc}">${inv.status}</span>
-      <span class="inv-amount">${fmt(inv.total)}</span>
-    </div>`;
-  }).join("");
-}
-
-function switchInner(clinicName, tab, btn) {
-  const sid = safeId(clinicName);
-  const detail_el = document.getElementById(`detail-${sid}`);
-  detail_el.querySelectorAll(".itab").forEach(b => b.classList.remove("active"));
-  detail_el.querySelectorAll(".itab-content").forEach(t => t.classList.remove("active"));
+function switchInner(sid,clinicName,tab,btn) {
+  const det=document.getElementById(`detail-${sid}`);
+  det.querySelectorAll(".itab").forEach(b=>b.classList.remove("active"));
+  det.querySelectorAll(".itab-content").forEach(t=>t.classList.remove("active"));
   btn.classList.add("active");
   document.getElementById(`itab-${sid}-${tab}`)?.classList.add("active");
-
-  // Lazy load detail
-  if (tab === "orders" || tab === "pitch") {
-    loadDetail(clinicName).then(clinic => {
-      renderOrders(clinic, sid);
-      renderPitch(clinic, sid);
-    }).catch(e => {
-      const el = document.getElementById(`itab-${sid}-${tab}`);
-      if (el) el.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`;
+  if (tab==="orders"||tab==="pitch") {
+    loadDetail(clinicName).then(d=>{renderOrders(d,sid);renderPitch(d,sid);}).catch(e=>{
+      const el=document.getElementById(`itab-${sid}-${tab}`);
+      if(el)el.innerHTML=`<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`;
     });
   }
-
-  if (tab === "invoices") {
-    loadDetail(clinicName).then(clinic => renderInvoices(clinic.invoices||[], sid))
-      .catch(e => { const el=document.getElementById(`itab-${sid}-invoices`); if(el) el.innerHTML=`<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`; });
-  }
-
-  if (tab === "nearby") loadNearbyMap(clinicName);
+  if (tab==="nearby") loadNearbyMap(sid,clinicName);
 }
 
-// Auto-load orders when expanded
-async function toggle(clinicName) {
-  const sid = safeId(clinicName);
-  const detail = document.getElementById(`detail-${sid}`);
-  const chev   = document.getElementById(`chev-${sid}`);
-  const isOpen = detail.classList.contains("open");
-
-  document.querySelectorAll(".detail.open").forEach(d => {
+function toggle(sid,clinicName) {
+  const det=document.getElementById(`detail-${sid}`);
+  const chev=document.getElementById(`chev-${sid}`);
+  const isOpen=det.classList.contains("open");
+  document.querySelectorAll(".detail.open").forEach(d=>{
     d.classList.remove("open");
-    const id = d.id.replace("detail-","");
-    const ch = document.getElementById(`chev-${id}`);
-    if (ch) ch.textContent = "▼";
+    const id=d.id.replace("detail-","");
+    const ch=document.getElementById(`chev-${id}`);
+    if(ch)ch.textContent="▼";
   });
-
   if (!isOpen) {
-    detail.classList.add("open");
-    if (chev) chev.textContent = "▲";
-    // Auto-load orders tab
-    loadDetail(clinicName).then(clinic => {
-      renderOrders(clinic, sid);
-      renderPitch(clinic, sid);
-    }).catch(e => {
-      const el = document.getElementById(`itab-${sid}-orders`);
-      if (el) el.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed to load detail: ${esc(e.message)}</div>`;
+    det.classList.add("open");
+    if(chev)chev.textContent="▲";
+    loadDetail(clinicName).then(d=>{renderOrders(d,sid);renderPitch(d,sid);}).catch(e=>{
+      const el=document.getElementById(`itab-${sid}-orders`);
+      if(el)el.innerHTML=`<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`;
     });
   }
 }
 
-// Geocode
-async function getCoords(address, city) {
-  const key = `${address}|${city}`;
-  if (geoCache[key] !== undefined) return geoCache[key];
+// ── Geocode + maps ─────────────────────────────────────────────
+async function getCoords(address,city) {
+  const key=`${address}|${city}`;
+  if (geoCache[key]!==undefined) return geoCache[key];
   try {
-    const res = await fetch(`${WORKER}/geocode?address=${encodeURIComponent(address||"")}&city=${encodeURIComponent(city||"")}`);
-    const data = await res.json();
-    geoCache[key] = data.coords || null;
-  } catch { geoCache[key] = null; }
+    const res=await fetch(`${WORKER}/geocode?address=${encodeURIComponent(address||"")}&city=${encodeURIComponent(city||"")}`);
+    const data=await res.json();
+    geoCache[key]=data.coords||null;
+  } catch{geoCache[key]=null;}
   return geoCache[key];
 }
 
-// Main map
 async function initMainMap() {
-  mainMapInited = true;
-  mainMap = L.map("main-map").setView([39.5,-98.35],4);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap contributors"}).addTo(mainMap);
-  for (const c of allClinics) {
-    const coords = await getCoords(c.address, c.cityStateZip);
-    if (!coords) { await new Promise(r=>setTimeout(r,200)); continue; }
-    const m = META[c.bucket]||META.never;
+  mainMapInited=true;
+  mainMap=L.map("main-map").setView([39.5,-98.35],4);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap"}).addTo(mainMap);
+  for (const c of allClinics.filter(c=>!ignoredSet.has(c.name))) {
+    const coords=await getCoords(c.address,c.cityStateZip);
+    if (!coords){await new Promise(r=>setTimeout(r,200));continue;}
+    const m=META[c.bucket]||META.never;
     L.circleMarker([coords.lat,coords.lng],{radius:7,fillColor:m.color,color:"#fff",weight:1.5,fillOpacity:.85})
-      .addTo(mainMap)
-      .bindPopup(`<strong>${c.name}</strong><br>${m.label}<br>${c.daysSinceLast!=null?c.daysSinceLast+"d ago":"no orders"}`);
+      .addTo(mainMap).bindPopup(`<strong>${c.name}</strong><br>${m.label}<br>${c.daysSinceLast!=null?c.daysSinceLast+"d ago":"no orders"}`);
     await new Promise(r=>setTimeout(r,200));
   }
 }
 
-// Nearby map
-async function loadNearbyMap(clinicName) {
-  const sid = safeId(clinicName);
-  const clinic = allClinics.find(c=>c.name===clinicName);
+async function loadNearbyMap(sid,clinicName) {
+  const clinic=allClinics.find(c=>c.name===clinicName);
   if (!clinic) return;
-  const container = document.getElementById(`nearby-map-${sid}`);
+  const container=document.getElementById(`nearby-map-${sid}`);
   if (!container) return;
-  container.innerHTML = `<span style="color:#aaa;font-size:13px">Geocoding…</span>`;
-
-  const coords = await getCoords(clinic.address, clinic.cityStateZip);
-  if (!coords) { container.innerHTML=`<span style="color:#aaa;font-size:13px">Could not geocode this address</span>`; return; }
-
-  container.innerHTML = "";
-  container.style.display = "block";
-  const map = L.map(container).setView([coords.lat,coords.lng],10);
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap contributors"}).addTo(map);
-  L.circleMarker([coords.lat,coords.lng],{radius:9,fillColor:"#111",color:"#fff",weight:2,fillOpacity:1})
-    .addTo(map).bindPopup(`<strong>${clinicName}</strong> (this clinic)`).openPopup();
-
-  const stateMatch = (clinic.cityStateZip||"").match(/\b([A-Z]{2})\b/);
-  const state = stateMatch ? stateMatch[1] : "";
-  const nearby = allClinics.filter(c => c.name!==clinicName && state && (c.cityStateZip||"").includes(state)).slice(0,12);
-
+  container.innerHTML=`<span style="color:#aaa;font-size:13px">Geocoding…</span>`;
+  const coords=await getCoords(clinic.address,clinic.cityStateZip);
+  if (!coords){container.innerHTML=`<span style="color:#aaa;font-size:13px">Could not geocode address</span>`;return;}
+  container.innerHTML="";container.style.display="block";
+  const map=L.map(container).setView([coords.lat,coords.lng],10);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{attribution:"© OpenStreetMap"}).addTo(map);
+  L.circleMarker([coords.lat,coords.lng],{radius:9,fillColor:"#111",color:"#fff",weight:2,fillOpacity:1}).addTo(map).bindPopup(`<strong>${clinicName}</strong>`).openPopup();
+  const state=(clinic.cityStateZip||"").match(/\b([A-Z]{2})\b/)?.[1]||"";
+  const nearby=allClinics.filter(c=>c.name!==clinicName&&state&&(c.cityStateZip||"").includes(state)).slice(0,12);
   for (const nc of nearby) {
-    const nc2 = await getCoords(nc.address, nc.cityStateZip);
-    if (!nc2) { await new Promise(r=>setTimeout(r,150)); continue; }
-    const m = META[nc.bucket]||META.never;
-    L.circleMarker([nc2.lat,nc2.lng],{radius:6,fillColor:m.color,color:"#fff",weight:1.5,fillOpacity:.8})
-      .addTo(map).bindPopup(`<strong>${nc.name}</strong><br>${m.label}`);
+    const nc2=await getCoords(nc.address,nc.cityStateZip);
+    if (!nc2){await new Promise(r=>setTimeout(r,150));continue;}
+    const m=META[nc.bucket]||META.never;
+    L.circleMarker([nc2.lat,nc2.lng],{radius:6,fillColor:m.color,color:"#fff",weight:1.5,fillOpacity:.8}).addTo(map).bindPopup(`<strong>${nc.name}</strong><br>${m.label}`);
     await new Promise(r=>setTimeout(r,200));
   }
 }
 
-// Email
+// ── Contact log ────────────────────────────────────────────────
+function logContact(clinicName, type) {
+  const entry={name:clinicName,type,date:new Date().toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}),ts:Date.now()};
+  contactLog.push(entry);
+  localStorage.setItem("ps_log",JSON.stringify(contactLog));
+  // Refresh date column in list
+  renderList();
+}
+
+function renderLog() {
+  const el=document.getElementById("logList");
+  if (!contactLog.length){el.innerHTML=`<div class="inv-loading">No contacts logged yet.</div>`;return;}
+  const sorted=[...contactLog].sort((a,b)=>b.ts-a.ts);
+  el.innerHTML=sorted.slice(0,100).map(l=>`
+    <div class="log-row">
+      <span class="log-date">${l.date}</span>
+      <span class="log-name">${esc(l.name)}</span>
+      <span class="log-type">${esc(l.type)}</span>
+    </div>`).join("");
+}
+
+function clearLog() {
+  if (!confirm("Clear all contact log entries?")) return;
+  contactLog=[];
+  localStorage.setItem("ps_log","[]");
+  renderLog();
+  renderList();
+}
+
+// ── Drug shorthand ─────────────────────────────────────────────
+const DRUG_SHORT={
+  apomorphine:"apo",pimobendan:"pimo",gabapentin:"gaba",cyclosporine:"cyclo",
+  metronidazole:"metro",methimazole:"methim",enrofloxacin:"enro",mupirocin:"EKT",
+  ponazuril:"ponaz",tramadol:"tram",furosemide:"furo",enalapril:"enal",
+  benazepril:"benzo",cisapride:"cisa",tacrolimus:"tacro",doxycycline:"doxy",
+  sucralfate:"sucral",omeprazole:"omep",triamcinolone:"triam",ketoconazole:"keto",
+};
+function shortDrug(name) {
+  if (!name) return null;
+  const lower=name.toLowerCase();
+  for (const [drug,abbr] of Object.entries(DRUG_SHORT)) { if(lower.includes(drug)) return abbr; }
+  return name.split(" ").slice(0,2).join(" ");
+}
+
+// ── Email drafts ───────────────────────────────────────────────
 function buildEmailSection(c) {
-  const first = (c.contact||"there").split(" ")[0];
-  const emails = {
-    a: { subject:"Quick question", body:`Hey ${first},\n\nQuick question, what happened? Looking through old records I can see your clinic ordered compounded medications from us in the past but haven't ordered again in some time which makes me think one of three things, pricing was too high, you didn't like your sales rep, or you've hit the lottery and retired :)\n\nHoping it's the 3rd option but would love the opportunity to learn what happened.\n\nJP\nPetScript Pharmacy\njp@petscript.net` },
-    b: { subject:"Checking in", body:`Hey ${first},\n\nJust checking in — it's been ${c.daysSinceLast!=null?c.daysSinceLast+" days":"a while"} since your last order. Did something change on your end, or can I help get you resupplied?\n\nNo pressure, just want to make sure we're taking care of you.\n\nJP\nPetScript Pharmacy\njp@petscript.net` },
-    c: { subject:"Still compounding with us?", body:`Hey ${first},\n\nSaw it's been a while since your last order. Are you still sourcing compounded medications?\n\nIf pricing or turnaround was the issue I can fix it. If you found a better source I'd love to know why.\n\nJP\nPetScript Pharmacy\njp@petscript.net` },
+  const first=(c.contact||"there").split(" ")[0];
+  const topDrop=c.droppedProducts?.[0];
+  const topActive=c.activeProducts?.[0];
+  const dropDrug=topDrop?shortDrug(topDrop.productName):null;
+  const days=c.daysSinceLast!=null?c.daysSinceLast:null;
+  const sid=safeId(c.name);
+
+  const emails={
+    a:{
+      subject:`Quick question`,
+      body:`Hey ${first},\n\nQuick question — what happened?\n\nLooked through our records, your clinic ordered ${dropDrug||"compounds"} from us before but went quiet. Makes me think one of three things:\n\n1. Pricing was off\n2. Rep situation\n3. You hit the lottery and retired :)\n\nHoping #3. Either way I'd love to know.\n\nJP\nPetScript | jp@petscript.net`
+    },
+    b:{
+      subject:`Still compounding for the office?`,
+      body:`Hey ${first},\n\nAre you still ordering compounds for the office or have you started scripting everything out?\n\nLast order was ${days!=null?days+" days ago":"a while back"}${dropDrug?` and the ${dropDrug} dropped off`:""}. Just want to make sure we didn't lose you over something I can fix.\n\nJP\nPetScript | jp@petscript.net`
+    },
+    c:{
+      subject:`${dropDrug||shortDrug(topActive?.productName)||"compounds"} — still running it?`,
+      body:`Hey ${first},\n\n${topDrop?`Saw you stopped ordering ${dropDrug} ${topDrop.daysSince} days ago — ${topDrop.orderCount} orders and then nothing.`:`It's been ${days!=null?days+" days":"a while"} since your last order.`}\n\nAre you getting it somewhere else or did you switch to the commercial? If it's a pricing thing I can usually match or beat what you're paying.\n\nJP\nPetScript | jp@petscript.net`
+    },
   };
-  let html = `<div class="email-section"><div class="etabs">
-    <button class="etab active" onclick="switchEmail('${safeId(c.name)}','a',this)">Win-back</button>
-    <button class="etab" onclick="switchEmail('${safeId(c.name)}','b',this)">Check-in</button>
-    <button class="etab" onclick="switchEmail('${safeId(c.name)}','c',this)">Direct</button>
+
+  let html=`<div class="email-section"><div class="etabs">
+    <button class="etab active" onclick="switchEmail('${sid}','a',this)">Win-back</button>
+    <button class="etab" onclick="switchEmail('${sid}','b',this)">Still ordering?</button>
+    <button class="etab" onclick="switchEmail('${sid}','c',this)">Dropped SKU</button>
   </div>`;
-  ["a","b","c"].forEach(k => {
-    html += `<div id="em-${safeId(c.name)}-${k}" style="display:${k==="a"?"block":"none"}">
+  ["a","b","c"].forEach(k=>{
+    html+=`<div id="em-${sid}-${k}" style="display:${k==="a"?"block":"none"}">
       <div class="email-subject">Subject: ${esc(emails[k].subject)}</div>
-      <div class="email-body" id="emb-${safeId(c.name)}-${k}">${esc(emails[k].body)}</div>
-      <button class="copy-btn" onclick="copyEmail('${safeId(c.name)}','${k}','${esc(emails[k].subject).replace(/'/g,"\\'")}')">📋 Copy</button>
+      <div class="email-body" id="emb-${sid}-${k}">${esc(emails[k].body)}</div>
+      <div class="email-actions">
+        <button class="copy-btn" onclick="copyEmail('${sid}','${k}','${esc(emails[k].subject).replace(/'/g,"\\'")}')">📋 Copy</button>
+        <button class="gmail-btn" id="gmailbtn-${sid}-${k}" onclick="createGmailDraft('${sid}','${k}','${esc(c.email||"")}','${esc(c.name).replace(/'/g,"\\'")}')">
+          ✉ Create Gmail draft
+        </button>
+        <span class="drafted-tag" id="drafted-${sid}-${k}" style="display:none">✓ Draft created</span>
+      </div>
     </div>`;
   });
-  return html + `</div>`;
+  return html+`</div>`;
 }
 
-function switchEmail(sid, tab, btn) {
-  const section = document.getElementById(`itab-${sid}-email`);
+function switchEmail(sid,tab,btn) {
+  const section=document.getElementById(`itab-${sid}-email`);
   section.querySelectorAll(".etab").forEach(b=>b.classList.remove("active"));
   btn.classList.add("active");
-  ["a","b","c"].forEach(k => { const el=document.getElementById(`em-${sid}-${k}`); if(el) el.style.display=k===tab?"block":"none"; });
+  ["a","b","c"].forEach(k=>{const el=document.getElementById(`em-${sid}-${k}`);if(el)el.style.display=k===tab?"block":"none";});
 }
 
-function copyEmail(sid, tab, subject) {
-  const body = document.getElementById(`emb-${sid}-${tab}`)?.textContent || "";
+function copyEmail(sid,tab,subject) {
+  const body=document.getElementById(`emb-${sid}-${tab}`)?.textContent||"";
   navigator.clipboard.writeText(`Subject: ${subject}\n\n${body}`).then(()=>alert("Copied!")).catch(()=>alert("Copy manually."));
 }
 
+// ── Gmail draft (Phase B — placeholder, Phase A wires it up) ──
+async function createGmailDraft(sid, tab, email, clinicName) {
+  const btn=document.getElementById(`gmailbtn-${sid}-${tab}`);
+  const tag=document.getElementById(`drafted-${sid}-${tab}`);
+  if (!email) { alert("No email address on file for this clinic."); return; }
+  btn.disabled=true; btn.textContent="Creating…";
+  try {
+    const subject=document.getElementById(`itab-${sid}-email`).querySelector(".email-subject")?.textContent?.replace("Subject: ","")||"";
+    const body=document.getElementById(`emb-${sid}-${tab}`)?.textContent||"";
+    // Phase A will call the worker route here
+    // For now: open Gmail compose in new tab as fallback
+    const gmailUrl=`https://mail.google.com/mail/?view=cm&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.open(gmailUrl,"_blank");
+    // Log the contact
+    logContact(clinicName,"Email draft");
+    btn.style.display="none";
+    tag.style.display="";
+  } catch(e) {
+    alert("Failed: "+e.message);
+    btn.disabled=false; btn.textContent="✉ Create Gmail draft";
+  }
+}
+
 function show(s) {
-  document.getElementById("stateLoading").style.display = s==="loading"?"block":"none";
-  document.getElementById("stateError").style.display   = s==="error"?"block":"none";
-  document.getElementById("cards").style.display        = s==="ready"?"grid":"none";
-  document.getElementById("filters").style.display      = s==="ready"?"flex":"none";
-  document.getElementById("clinicList").style.display   = s==="ready"?"flex":"none";
-  document.getElementById("rerollBtn").style.display    = s==="ready"?"":"none";
+  document.getElementById("stateLoading").style.display=s==="loading"?"block":"none";
+  document.getElementById("stateError").style.display=s==="error"?"block":"none";
+  document.getElementById("cards").style.display=s==="ready"?"grid":"none";
+  document.getElementById("filters").style.display=s==="ready"?"flex":"none";
+  document.getElementById("clinicList").style.display=s==="ready"?"flex":"none";
+  document.getElementById("rerollBtn").style.display=s==="ready"?"":"none";
 }
 
 load();
