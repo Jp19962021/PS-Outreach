@@ -432,6 +432,7 @@ function buildDetailShell(c,m) {
       <button class="itab" onclick="switchInner('${sid}','${cname}','pitch',this)">Pitch</button>
       <button class="itab" onclick="switchInner('${sid}','${cname}','nearby',this)">Nearby</button>
       <button class="itab" onclick="switchInner('${sid}','${cname}','invoices',this)">Invoices</button>
+      <button class="itab" onclick="switchInner('${sid}','${cname}','pipeline',this)">Pipeline</button>
       <button class="itab" onclick="switchInner('${sid}','${cname}','email',this)">Email drafts</button>
     </div>
     <div class="itab-content active" id="itab-${sid}-orders">
@@ -444,54 +445,107 @@ function buildDetailShell(c,m) {
       </div>
     </div>
     <div class="itab-content" id="itab-${sid}-invoices"><div class="inv-loading">Click Invoices to load</div></div>
+    <div class="itab-content" id="itab-${sid}-pipeline"><div class="inv-loading">Click Pipeline to load</div></div>
     <div class="itab-content" id="itab-${sid}-email">${buildEmailSection(c)}</div>`;
 }
 
 // ── Load + render detail ───────────────────────────────────────
+const PSTOOL = "https://fragrant-cloud-6ef2.jp-d4e.workers.dev";
+
 async function loadDetail(clinicName) {
   if (detailCache[clinicName]) return detailCache[clinicName];
-  const res=await fetch(`${WORKER}/clinic-detail?name=${encodeURIComponent(clinicName)}`);
-  const data=await res.json();
-  if (data.error) throw new Error(data.error);
-  const clinic=data.clinic||data.detail||data;
-  detailCache[clinicName]=clinic;
+
+  // Call fragrant-cloud get_clinic_detail — same data PSTOOL uses
+  const [detailRes, pitchRes] = await Promise.all([
+    fetch(`${PSTOOL}/ai-chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tool: "get_clinic_detail", args: { clinic_name: clinicName, show_skus: true } })
+    }),
+    fetch(`${PSTOOL}/ai-chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tool: "rank_clinics", args: { metric: "revenue_2026", direction: "bottom", limit: 10 } })
+    }),
+  ]);
+
+  const detailData = await detailRes.json();
+  if (!detailData.success) throw new Error(detailData.error || "Failed to load clinic detail");
+
+  const clinic = detailData.result;
+  detailCache[clinicName] = clinic;
   return clinic;
 }
 
-function renderOrders(clinic,sid) {
-  const el=document.getElementById(`itab-${sid}-orders`);
+function renderOrders(clinic, sid) {
+  const el = document.getElementById(`itab-${sid}-orders`);
   if (!el) return;
-  const products=clinic.products||[];
-  const stopped=products.filter(p=>p.status==="Stopped"||p.status==="Past Only");
-  const active=products.filter(p=>p.status==="Active");
-  let html="";
+  const products = clinic.products || [];
+  const stopped = products.filter(p => p.status === "Stopped" || p.status === "Past Only");
+  const active  = products.filter(p => p.status === "Active");
+  let html = "";
+
+  // Revenue summary
+  const rev = clinic.revenue || {};
+  if (rev["2026_ytd"] !== undefined) {
+    html += `<div class="spend-row" style="margin-bottom:12px">
+      <div class="spend-box"><div class="spend-label">2026 YTD</div><div class="spend-value">${fmt(rev["2026_ytd"])}</div></div>
+      <div class="spend-box"><div class="spend-label">2025</div><div class="spend-value">${fmt(rev["2025"])}</div></div>
+      <div class="spend-box"><div class="spend-label">2024</div><div class="spend-value">${fmt(rev["2024"])}</div></div>
+      <div class="spend-box"><div class="spend-label">3-Year Total</div><div class="spend-value">${fmt(rev.three_year_total)}</div></div>
+    </div>`;
+  }
+
   if (stopped.length) {
-    html+=`<div class="detail-section"><div class="dl">Stopped ordering (${stopped.length})</div>
-      <table class="prod-table"><thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>Lost revenue</th></tr></thead><tbody>`;
-    stopped.slice(0,8).forEach(p=>{
-      html+=`<tr><td><div class="prod-name">${esc(p.product)}</div></td><td style="color:#888">${p.order_count||"—"}</td><td style="color:#888">${p.last_order_date||"—"}</td><td class="lost">${fmt(p.lost_revenue||p.total_revenue)}</td></tr>`;
+    html += `<div class="detail-section"><div class="dl">⚠ Stopped ordering (${stopped.length})</div>
+      <table class="prod-table"><thead><tr><th>Product</th><th>SKUs</th><th>Orders</th><th>Last ordered</th><th>Lost revenue</th></tr></thead><tbody>`;
+    stopped.forEach(p => {
+      html += `<tr>
+        <td><div class="prod-name">${esc(p.product)}</div></td>
+        <td style="color:#888">${p.sku_count||1}</td>
+        <td style="color:#888">${p.order_count}</td>
+        <td style="color:#888">${p.last_order_date||"—"}</td>
+        <td class="lost">${fmt(p.lost_revenue||p.total_revenue)}</td>
+      </tr>`;
+      // Show SKUs if available
+      if (p.skus?.length > 1) {
+        p.skus.forEach(s => {
+          html += `<tr style="background:#FAFAFA"><td style="padding-left:16px;font-size:11px;color:#888" colspan="4">↳ ${esc(s.product)}</td><td style="font-size:11px;color:#888;text-align:right">${fmt(s.total_revenue)}</td></tr>`;
+        });
+      }
     });
-    html+=`</tbody></table></div>`;
+    html += `</tbody></table></div>`;
   }
+
   if (active.length) {
-    html+=`<div class="detail-section"><div class="dl">Still ordering (${active.length})</div>
-      <table class="prod-table"><thead><tr><th>Product</th><th>Orders</th><th>Last ordered</th><th>Revenue</th></tr></thead><tbody>`;
-    active.slice(0,6).forEach(p=>{
-      html+=`<tr><td><div class="prod-name">${esc(p.product)}</div></td><td style="color:#888">${p.order_count||"—"}</td><td style="color:#888">${p.last_order_date||"—"}</td><td class="active-tag">${fmt(p.total_revenue)}</td></tr>`;
+    html += `<div class="detail-section"><div class="dl">Still ordering (${active.length})</div>
+      <table class="prod-table"><thead><tr><th>Product</th><th>SKUs</th><th>Orders</th><th>Last ordered</th><th>Revenue</th></tr></thead><tbody>`;
+    active.forEach(p => {
+      html += `<tr>
+        <td><div class="prod-name">${esc(p.product)}</div></td>
+        <td style="color:#888">${p.sku_count||1}</td>
+        <td style="color:#888">${p.order_count}</td>
+        <td style="color:#888">${p.last_order_date||"—"}</td>
+        <td class="active-tag">${fmt(p.total_revenue)}</td>
+      </tr>`;
     });
-    html+=`</tbody></table></div>`;
+    html += `</tbody></table></div>`;
   }
-  if (!stopped.length&&!active.length) html=`<div class="inv-loading">No product history in data.js for this clinic.</div>`;
-  el.innerHTML=html;
+
+  if (!stopped.length && !active.length) html = `<div class="inv-loading">No product history found.</div>`;
+  el.innerHTML = html;
 }
 
-function renderPitch(clinic,sid) {
-  const el=document.getElementById(`itab-${sid}-pitch`);
+function renderPitch(clinic, sid) {
+  const el = document.getElementById(`itab-${sid}-pitch`);
   if (!el) return;
-  const pitches=clinic.pitch_opportunities||[];
-  if (!pitches.length){el.innerHTML=`<div class="inv-loading">No pitch opportunities — clinic has ordered everything.</div>`;return;}
-  el.innerHTML=`<div class="dl" style="margin-bottom:8px">Top products this clinic hasn't ordered</div>`+
-    pitches.map(p=>`<div class="pitch-item"><div class="pitch-name">${esc(p.product||"")}</div><div class="pitch-rev">${fmt(p.total_market_revenue)} market</div></div>`).join("");
+  const pitches = clinic.pitch_opportunities || [];
+  if (!pitches.length) { el.innerHTML = `<div class="inv-loading">No pitch opportunities — clinic has ordered everything.</div>`; return; }
+  el.innerHTML = `<div class="dl" style="margin-bottom:8px">Top products this clinic hasn't ordered</div>` +
+    pitches.map(p => `<div class="pitch-item">
+      <div class="pitch-name">${esc(p.product||"")}</div>
+      <div class="pitch-rev">${fmt(p.total_market_revenue)} market</div>
+    </div>`).join("");
 }
 
 function switchInner(sid,clinicName,tab,btn) {
@@ -507,6 +561,7 @@ function switchInner(sid,clinicName,tab,btn) {
     });
   }
   if (tab==="invoices") loadInvoices(sid, clinicName);
+  if (tab==="pipeline") loadPipeline(sid);
   if (tab==="nearby") loadNearbyMap(sid,clinicName);
 }
 
@@ -539,17 +594,109 @@ async function loadInvoices(sid, clinicName) {
     const res = await fetch(`${WORKER}/invoices?name=${encodeURIComponent(clinicName)}`);
     const data = await res.json();
     if (data.error) throw new Error(data.error);
-    const invoices = data.invoices || [];
-    if (!invoices.length) { el.innerHTML=`<div class="inv-loading">No invoices found in Zoho for this clinic.</div>`; return; }
-    el.innerHTML = invoices.slice(0,15).map(inv => {
-      const sc = inv.status==="overdue"?"inv-overdue":inv.status==="paid"?"inv-paid":"inv-open";
-      return `<div class="inv-row">
-        <span class="inv-num">${esc(inv.invoice_number)}</span>
-        <span class="inv-date">${esc(inv.invoice_date)}</span>
-        <span class="inv-status ${sc}">${esc(inv.status)}</span>
-        <span class="inv-amount">${fmt(inv.total)}</span>
+
+    const { contact, invoices, comments } = data;
+    let html = "";
+
+    // Contact summary
+    if (contact) {
+      html += `<div class="detail-section">
+        <div class="dl">Zoho account</div>
+        <div style="font-size:12px;color:#555;line-height:1.8">
+          ${contact.outstanding>0?`<div><strong style="color:#C0392B">Outstanding: ${fmt(contact.outstanding)}</strong></div>`:""}
+          ${contact.custom_fields?.map(f=>`<div><strong>${esc(f.label)}:</strong> ${esc(f.value)}</div>`).join("")||""}
+        </div>
       </div>`;
-    }).join("");
+    }
+
+    // Comments / notes
+    if (comments?.length) {
+      html += `<div class="detail-section"><div class="dl">Notes (${comments.length})</div>`;
+      comments.slice(0,10).forEach(c => {
+        html += `<div style="padding:6px 0;border-bottom:1px solid #F5F5F5;font-size:12px">
+          <div style="color:#aaa;font-size:10px;margin-bottom:2px">${esc(c.date)} · ${esc(c.commented_by)}</div>
+          <div style="color:#333">${esc(c.description)}</div>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    // Invoices
+    if (invoices?.length) {
+      html += `<div class="detail-section"><div class="dl">Invoices (${invoices.length})</div>`;
+      invoices.slice(0,15).forEach(inv => {
+        const sc = inv.status==="overdue"?"inv-overdue":inv.status==="paid"?"inv-paid":"inv-open";
+        html += `<div class="inv-row">
+          <span class="inv-num">${esc(inv.invoice_number)}</span>
+          <span class="inv-date">${esc(inv.invoice_date)}</span>
+          <span class="inv-status ${sc}">${esc(inv.status)}</span>
+          <span class="inv-amount">${fmt(inv.total)}</span>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    if (!contact && !invoices?.length) {
+      html = `<div class="inv-loading">No Zoho record found for this clinic.</div>`;
+    }
+
+    el.innerHTML = html;
+  } catch(e) {
+    el.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`;
+  }
+}
+
+// ── Pipeline ───────────────────────────────────────────────────
+const pipelineCache = {};
+async function loadPipeline(sid) {
+  const el = document.getElementById(`itab-${sid}-pipeline`);
+  if (!el || el.dataset.loaded) return;
+  el.dataset.loaded = "1";
+  el.innerHTML = `<div class="inv-loading">Loading pipeline data…</div>`;
+  try {
+    if (!pipelineCache.data) {
+      const [atRiskRes, winbackRes, growersRes] = await Promise.all([
+        fetch(`${PSTOOL}/ai-chat`, { method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ tool:"compare_product_adoption", args:{ product_search:"", had_year:2025, missing_year:2026, limit:10 } }) }),
+        fetch(`${PSTOOL}/ai-chat`, { method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ tool:"rank_clinics", args:{ metric:"revenue_2025", direction:"top", limit:10 } }) }),
+        fetch(`${PSTOOL}/ai-chat`, { method:"POST", headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({ tool:"compare_periods", args:{ period_a:"year", period_b:"year", offset_a:0, offset_b:-1, group_by:"clinic", limit:10 } }) }),
+      ]);
+      const [atRisk, winback, growers] = await Promise.all([atRiskRes.json(), winbackRes.json(), growersRes.json()]);
+      pipelineCache.data = { atRisk, winback, growers };
+    }
+
+    const { atRisk, winback, growers } = pipelineCache.data;
+    let html = "";
+
+    // At-risk (stopped ordering 2026 vs 2025)
+    const atRiskList = atRisk.result?.results || [];
+    if (atRiskList.length) {
+      html += `<div class="detail-section"><div class="dl">🚨 Win-back targets (ordered 2025, not 2026)</div>`;
+      atRiskList.slice(0,10).forEach(c => {
+        html += `<div class="pitch-item">
+          <div class="pitch-name">${esc(c.clinic)}</div>
+          <div class="pitch-rev" style="color:#C0392B">${fmt(c.revenue_2025)} lost</div>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    // Fastest growers
+    const growerList = growers.result?.results || [];
+    if (growerList.length) {
+      html += `<div class="detail-section"><div class="dl">🚀 Fastest growers (2025 → 2026)</div>`;
+      growerList.filter(c=>c.change_abs>0).slice(0,10).forEach(c => {
+        html += `<div class="pitch-item">
+          <div class="pitch-name">${esc(c.clinic)}</div>
+          <div class="pitch-rev">+${fmt(c.change_abs)}</div>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+    el.innerHTML = html || `<div class="inv-loading">No pipeline data available.</div>`;
   } catch(e) {
     el.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`;
   }
