@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PS Outreach — Daily 50</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #F5F5F5; color: #111; min-height: 100vh; }
+
+  .header { background: #fff; border-bottom: 1px solid #E5E5E5; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 10; }
+  .header-left .eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: #999; margin-bottom: 2px; }
+  .header-left h1 { font-size: 18px; font-weight: 700; }
+  .header-left .date { font-size: 12px; color: #666; margin-top: 2px; }
+  .header-right { display: flex; gap: 8px; align-items: center; }
+
+  .btn { font-size: 12px; padding: 7px 14px; border-radius: 8px; border: none; cursor: pointer; font-weight: 500; }
+  .btn-primary { background: #111; color: #fff; }
+  .btn-primary:disabled { opacity: 0.4; cursor: default; }
+  .btn-secondary { background: #fff; color: #333; border: 1px solid #ddd; }
+
+  .main { max-width: 860px; margin: 0 auto; padding: 24px 16px; }
+
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+  .card { background: #fff; border-radius: 10px; padding: 14px; border: 1px solid #E5E5E5; }
+  .card .card-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: #999; margin-bottom: 4px; }
+  .card .card-value { font-size: 28px; font-weight: 700; line-height: 1; }
+  .card .card-sub { font-size: 11px; color: #aaa; margin-top: 4px; }
+
+  .filters { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+  .pill { font-size: 12px; padding: 5px 13px; border-radius: 20px; border: none; cursor: pointer; background: #E8E8E8; color: #555; font-weight: 400; }
+  .pill.active { background: #111; color: #fff; font-weight: 600; }
+
+  .list { display: flex; flex-direction: column; gap: 6px; }
+
+  .clinic-card { background: #fff; border: 1px solid #E5E5E5; border-radius: 10px; overflow: hidden; }
+  .clinic-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; cursor: pointer; }
+  .clinic-row:hover { background: #FAFAFA; }
+  .clinic-num { font-size: 11px; color: #ccc; min-width: 22px; text-align: right; flex-shrink: 0; }
+  .bucket-badge { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+  .clinic-info { flex: 1; min-width: 0; }
+  .clinic-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .clinic-sub { font-size: 11px; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+  .clinic-meta { text-align: right; flex-shrink: 0; }
+  .clinic-days { font-size: 13px; font-weight: 700; }
+  .clinic-ltv { font-size: 11px; color: #aaa; margin-top: 1px; }
+  .clinic-chevron { font-size: 10px; color: #ccc; flex-shrink: 0; }
+
+  .clinic-detail { border-top: 1px solid #F0F0F0; padding: 14px 16px; background: #FAFAFA; display: none; }
+  .clinic-detail.open { display: block; }
+
+  .detail-section { margin-bottom: 12px; }
+  .detail-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: #aaa; margin-bottom: 5px; }
+  .detail-box { font-size: 13px; color: #444; background: #fff; border: 1px solid #E8E8E8; border-radius: 8px; padding: 10px 12px; line-height: 1.6; }
+  .detail-text { font-size: 13px; color: #555; line-height: 1.6; }
+
+  .dropped-list { display: flex; flex-direction: column; gap: 6px; }
+  .dropped-item { background: #fff; border: 1px solid #E8E8E8; border-radius: 8px; padding: 10px 12px; }
+  .dropped-item .product-name { font-size: 13px; font-weight: 600; color: #111; margin-bottom: 2px; }
+  .dropped-item .product-meta { font-size: 11px; color: #888; display: flex; gap: 12px; flex-wrap: wrap; }
+  .dropped-item .lost { color: #C0392B; font-weight: 600; }
+
+  .contact-row { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12px; color: #888; margin-top: 10px; }
+
+  .loading { text-align: center; padding: 4rem; }
+  .loading .spinner { font-size: 32px; margin-bottom: 12px; animation: spin 1.5s linear infinite; display: inline-block; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading p { font-size: 14px; color: #666; }
+  .loading small { font-size: 12px; color: #aaa; display: block; margin-top: 6px; }
+
+  .error-box { background: #FEF2F2; border: 1px solid #FCA5A5; border-radius: 10px; padding: 16px; font-size: 13px; color: #991B1B; }
+  .error-box button { margin-top: 10px; font-size: 12px; padding: 6px 14px; cursor: pointer; border-radius: 6px; border: 1px solid #FCA5A5; background: #fff; color: #991B1B; }
+
+  .empty { text-align: center; padding: 3rem; color: #aaa; font-size: 13px; }
+  .footer { text-align: center; font-size: 11px; color: #ccc; margin-top: 20px; padding-bottom: 40px; }
+
+  @media (max-width: 600px) {
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .header { padding: 12px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="eyebrow">PetScript Pharmacy</div>
+    <h1>Daily Outreach</h1>
+    <div class="date" id="dateStr"></div>
+  </div>
+  <div class="header-right">
+    <button class="btn btn-secondary" id="rerollBtn" onclick="reroll()" style="display:none">↺ Re-roll</button>
+    <button class="btn btn-primary" id="refreshBtn" onclick="load()">↻ Refresh</button>
+  </div>
+</div>
+
+<div class="main">
+  <!-- Summary cards -->
+  <div class="cards" id="cards" style="display:none">
+    <div class="card">
+      <div class="card-label">Today's list</div>
+      <div class="card-value" id="cTotal">—</div>
+      <div class="card-sub" id="cEligible"></div>
+    </div>
+    <div class="card">
+      <div class="card-label">Never ordered</div>
+      <div class="card-value" style="color:#C0392B" id="cNever">—</div>
+      <div class="card-sub">priority 1</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Gone dark 90d+</div>
+      <div class="card-value" style="color:#B7770D" id="cDark">—</div>
+      <div class="card-sub">priority 2</div>
+    </div>
+    <div class="card">
+      <div class="card-label">Lapsed / dropped</div>
+      <div class="card-value" style="color:#1A5CA8" id="cLapsed">—</div>
+      <div class="card-sub">priority 3</div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters" id="filters" style="display:none">
+    <button class="pill active" onclick="setFilter('all')" data-f="all">All</button>
+    <button class="pill" onclick="setFilter('never')" data-f="never">Never ordered</button>
+    <button class="pill" onclick="setFilter('dark')" data-f="dark">Gone dark</button>
+    <button class="pill" onclick="setFilter('lapsed')" data-f="lapsed">Lapsed</button>
+    <button class="pill" onclick="setFilter('dropped')" data-f="dropped">Dropped product</button>
+  </div>
+
+  <!-- States -->
+  <div id="stateLoading" class="loading">
+    <div class="spinner">⏳</div>
+    <p id="loadMsg">Loading clinic data…</p>
+    <small>Parsing 6,988 clinics server-side</small>
+  </div>
+
+  <div id="stateError" class="error-box" style="display:none">
+    <strong>Error: </strong><span id="errorMsg"></span>
+    <br><button onclick="load()">Retry</button>
+  </div>
+
+  <!-- Clinic list -->
+  <div class="list" id="clinicList" style="display:none"></div>
+
+  <div class="empty" id="stateEmpty" style="display:none">No clinics in this bucket.</div>
+  <div class="footer" id="footer"></div>
+</div>
+
+<script>
+const WORKER = "https://50clinicoutreach.jp-d4e.workers.dev";
+
+const META = {
+  never:   { label:"Never ordered",    color:"#C0392B", bg:"#FDECEA" },
+  dark:    { label:"Gone dark 90d+",   color:"#B7770D", bg:"#FEF3CD" },
+  lapsed:  { label:"Lapsed 45–90d",    color:"#1A5CA8", bg:"#E8F0FD" },
+  dropped: { label:"Dropped product",  color:"#6B21A8", bg:"#F3E8FF" },
+};
+
+let allClinics = [];
+let currentFilter = "all";
+
+// ── Date display ────────────────────────────────────────────────────────────
+document.getElementById("dateStr").textContent = new Date().toLocaleDateString("en-US", {
+  weekday:"long", month:"long", day:"numeric", year:"numeric"
+});
+
+// ── Load from worker ─────────────────────────────────────────────────────────
+async function load() {
+  setState("loading");
+  document.getElementById("loadMsg").textContent = "Fetching clinic data from worker…";
+  document.getElementById("refreshBtn").disabled = true;
+
+  try {
+    const res = await fetch(`${WORKER}/outreach?t=${Date.now()}`);
+    if (!res.ok) throw new Error(`Worker returned ${res.status}`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+
+    allClinics = data.clinics;
+
+    // Update cards
+    document.getElementById("cTotal").textContent   = data.clinics.length;
+    document.getElementById("cEligible").textContent = `${(data.total_eligible||0).toLocaleString()} eligible`;
+    document.getElementById("cNever").textContent    = data.counts?.never   || 0;
+    document.getElementById("cDark").textContent     = data.counts?.dark    || 0;
+    document.getElementById("cLapsed").textContent   = (data.counts?.lapsed||0) + (data.counts?.dropped||0);
+    document.getElementById("footer").textContent    = `Last synced: ${new Date(data.generated_at).toLocaleString()}`;
+
+    // Update filter pill counts
+    updatePillCounts(data.clinics);
+
+    setState("ready");
+    renderList(currentFilter);
+  } catch(e) {
+    document.getElementById("errorMsg").textContent = e.message;
+    setState("error");
+  }
+
+  document.getElementById("refreshBtn").disabled = false;
+}
+
+function updatePillCounts(clinics) {
+  const counts = { all: clinics.length, never:0, dark:0, lapsed:0, dropped:0 };
+  clinics.forEach(c => { if (counts[c.bucket] !== undefined) counts[c.bucket]++; });
+  document.querySelectorAll(".pill").forEach(p => {
+    const f = p.dataset.f;
+    p.textContent = f === "all"
+      ? `All (${counts.all})`
+      : `${META[f]?.label || f} (${counts[f]||0})`;
+  });
+}
+
+// ── Re-roll ──────────────────────────────────────────────────────────────────
+function reroll() {
+  const shuffled = [...allClinics].sort(() => Math.random() - 0.5);
+  allClinics = shuffled;
+  renderList(currentFilter);
+}
+
+// ── Filter ───────────────────────────────────────────────────────────────────
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll(".pill").forEach(p => p.classList.toggle("active", p.dataset.f === f));
+  renderList(f);
+}
+
+// ── Render clinic list ────────────────────────────────────────────────────────
+function renderList(filter) {
+  const list = filter === "all" ? allClinics : allClinics.filter(c => c.bucket === filter);
+  const container = document.getElementById("clinicList");
+  container.innerHTML = "";
+
+  if (list.length === 0) {
+    document.getElementById("stateEmpty").style.display = "block";
+    container.style.display = "none";
+    return;
+  }
+  document.getElementById("stateEmpty").style.display = "none";
+  container.style.display = "flex";
+
+  list.forEach((c, i) => {
+    const m = META[c.bucket] || META.never;
+    const el = document.createElement("div");
+    el.className = "clinic-card";
+    el.innerHTML = `
+      <div class="clinic-row" onclick="toggle(this, ${c.idx})">
+        <div class="clinic-num">${i+1}</div>
+        <div class="bucket-badge" style="background:${m.bg};color:${m.color}">${m.label}</div>
+        <div class="clinic-info">
+          <div class="clinic-name">${esc(c.name)}</div>
+          <div class="clinic-sub">${esc(c.contact||"—")}${c.email ? " · "+esc(c.email) : ""}</div>
+        </div>
+        <div class="clinic-meta">
+          ${c.days != null
+            ? `<div class="clinic-days" style="color:${m.color}">${c.days}d ago</div>`
+            : `<div class="clinic-days" style="color:#bbb">no orders</div>`}
+          ${c.spend > 0 ? `<div class="clinic-ltv">$${Math.round(c.spend).toLocaleString()} LTV</div>` : ""}
+        </div>
+        <div class="clinic-chevron">▼</div>
+      </div>
+      <div class="clinic-detail" id="detail-${c.idx}">
+        ${buildDetail(c, m)}
+      </div>
+    `;
+    container.appendChild(el);
+  });
+}
+
+function buildDetail(c, m) {
+  let html = "";
+
+  // Why they're here
+  html += `<div class="detail-section">
+    <div class="detail-label">Why they're here</div>
+    <div class="detail-box">${buildReason(c)}</div>
+  </div>`;
+
+  // Dropped products
+  if (c.dropped?.length > 0) {
+    html += `<div class="detail-section">
+      <div class="detail-label">Products they stopped ordering</div>
+      <div class="dropped-list">`;
+    c.dropped.slice(0, 5).forEach(d => {
+      html += `<div class="dropped-item">
+        <div class="product-name">${esc(d.productName)}</div>
+        <div class="product-meta">
+          <span class="lost">$${d.totalSpend.toLocaleString()} lost</span>
+          <span>${d.orderCount} order${d.orderCount !== 1 ? "s" : ""}</span>
+          <span>Last ordered ${d.lastDays}d ago</span>
+          ${d.lastDate ? `<span>${esc(d.lastDate)}</span>` : ""}
+        </div>
+      </div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  // What to do
+  html += `<div class="detail-section">
+    <div class="detail-label">What to do</div>
+    <div class="detail-text">${buildAction(c)}</div>
+  </div>`;
+
+  // Contact info
+  const contacts = [
+    c.phone    ? `📞 ${esc(c.phone)}`    : "",
+    c.email    ? `✉️ ${esc(c.email)}`    : "",
+    c.address  ? `📍 ${esc(c.address)}`  : "",
+    c.lastDate ? `🗓 Last order: ${esc(c.lastDate)}` : "",
+  ].filter(Boolean);
+
+  if (contacts.length) {
+    html += `<div class="contact-row">${contacts.map(s=>`<span>${s}</span>`).join("")}</div>`;
+  }
+
+  return html;
+}
+
+function buildReason(c) {
+  if (c.bucket === "never") return "In your system but has never placed a compounding order with PetScript.";
+  if (c.bucket === "dark")  return `Last order ${c.days} days ago. Spent $${Math.round(c.spend).toLocaleString()} lifetime — has completely stopped ordering.`;
+  if (c.bucket === "lapsed") return `Last order ${c.days} days ago. Ordering cadence has stalled — $${Math.round(c.spend).toLocaleString()} lifetime value at risk.`;
+  if (c.bucket === "dropped") {
+    const top = c.dropped?.[0];
+    if (top) return `Still ordering overall but dropped <strong>${esc(top.productName)}</strong> ${top.lastDays} days ago — $${top.totalSpend.toLocaleString()} in lost revenue.`;
+    return "Still ordering overall but has stopped specific products they previously ordered regularly.";
+  }
+  return "";
+}
+
+function buildAction(c) {
+  if (c.bucket === "never") return "Ask what they're currently compounding and offer to price it out. Remove friction for that first order.";
+  if (c.bucket === "dark")  return "Direct check-in. Ask if something changed — pricing, turnaround, or rep relationship. Don't oversell.";
+  if (c.bucket === "lapsed") return "Simple reorder nudge. Ask what they're running low on or offer to duplicate their last order.";
+  if (c.bucket === "dropped") {
+    const top = c.dropped?.[0];
+    return top
+      ? `Ask why they stopped ordering <strong>${esc(top.productName)}</strong>. Did they switch sources? Is it a pricing or formulation issue? Offer to match or improve what they're getting elsewhere.`
+      : "Ask about specific products they may have sourced elsewhere. Offer to price match or improve formulations.";
+  }
+  return "";
+}
+
+// ── Toggle expand ─────────────────────────────────────────────────────────────
+function toggle(row, idx) {
+  const detail = document.getElementById(`detail-${idx}`);
+  const chevron = row.querySelector(".clinic-chevron");
+  const isOpen = detail.classList.contains("open");
+  // Close all others
+  document.querySelectorAll(".clinic-detail.open").forEach(d => {
+    d.classList.remove("open");
+    d.previousElementSibling.querySelector(".clinic-chevron").textContent = "▼";
+  });
+  if (!isOpen) {
+    detail.classList.add("open");
+    chevron.textContent = "▲";
+  }
+}
+
+// ── State management ──────────────────────────────────────────────────────────
+function setState(s) {
+  document.getElementById("stateLoading").style.display = s === "loading" ? "block" : "none";
+  document.getElementById("stateError").style.display   = s === "error"   ? "block" : "none";
+  document.getElementById("cards").style.display        = s === "ready"   ? "grid"  : "none";
+  document.getElementById("filters").style.display      = s === "ready"   ? "flex"  : "none";
+  document.getElementById("clinicList").style.display   = s === "ready"   ? "flex"  : "none";
+  document.getElementById("rerollBtn").style.display    = s === "ready"   ? "inline-block" : "none";
+}
+
+function esc(s) {
+  return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+load();
+</script>
+</body>
+</html>
