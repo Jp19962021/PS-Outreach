@@ -150,6 +150,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
 
 <div class="main-tabs">
   <div class="main-tab active" onclick="switchMain('list',this)">📋 Today's 50</div>
+  <div class="main-tab" onclick="switchMain('pipeline',this)">📈 Pipeline & Trends</div>
   <div class="main-tab" onclick="switchMain('log',this)">📋 Contact log</div>
   <div class="main-tab" onclick="switchMain('map',this)">🗺 Map</div>
 </div>
@@ -176,6 +177,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; b
     <div id="stateError" class="error-box" style="display:none"><strong>Error:</strong> <span id="errMsg"></span><br><button class="btn btn-outline" style="margin-top:10px" onclick="load()">Retry</button></div>
     <div class="list" id="clinicList" style="display:none"></div>
     <div class="footer" id="footer"></div>
+  </div>
+</div>
+
+<!-- PIPELINE TAB -->
+<div id="pipeline-tab-content" class="tab-content">
+  <div class="main">
+    <div style="font-size:15px;font-weight:600;margin-bottom:16px">Pipeline & Trends</div>
+    <div id="pipelineContent"><div class="loading">Loading pipeline data…</div></div>
   </div>
 </div>
 
@@ -243,6 +252,7 @@ function switchMain(tab, btn) {
   document.getElementById(`${tab}-tab-content`).classList.add("active");
   if (tab==="map" && !mainMapInited && allClinics.length) initMainMap();
   if (tab==="log") renderLog();
+  if (tab==="pipeline") loadMainPipeline();
 }
 
 // ── Load ───────────────────────────────────────────────────────
@@ -455,37 +465,79 @@ const PSTOOL = "https://fragrant-cloud-6ef2.jp-d4e.workers.dev";
 async function loadDetail(clinicName) {
   if (detailCache[clinicName]) return detailCache[clinicName];
 
-  // Call fragrant-cloud get_clinic_detail — same data PSTOOL uses
-  const [detailRes, pitchRes] = await Promise.all([
-    fetch(`${PSTOOL}/ai-chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tool: "get_clinic_detail", args: { clinic_name: clinicName, show_skus: true } })
-    }),
-    fetch(`${PSTOOL}/ai-chat`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tool: "rank_clinics", args: { metric: "revenue_2026", direction: "bottom", limit: 10 } })
-    }),
-  ]);
+  // Use local clinic data from outreach-data.js (already loaded)
+  const local = allClinics.find(c => c.name === clinicName) ||
+    (searchResults||[]).find(c => c.name === clinicName);
 
-  const detailData = await detailRes.json();
-  if (!detailData.success) throw new Error(detailData.error || "Failed to load clinic detail");
+  if (local) {
+    // Build a detail object from local data matching the expected shape
+    const detail = {
+      clinic: local.name,
+      rep: local.repName,
+      email: local.email,
+      phone: local.phone,
+      revenue: {
+        '2026_ytd': local.ytdSpend,
+        '2025': local.lastYtdSpend,
+        '2024': 0,
+        three_year_total: local.spend,
+      },
+      products: [
+        ...(local.droppedProducts||[]).map(p => ({
+          product: p.productName,
+          status: 'Stopped',
+          order_count: p.orderCount,
+          last_order_date: p.lastOrderDate,
+          total_revenue: p.totalSpend,
+          lost_revenue: p.totalSpend,
+          sku_count: 1,
+        })),
+        ...(local.activeProducts||[]).map(p => ({
+          product: p.productName,
+          status: 'Active',
+          order_count: p.orderCount,
+          last_order_date: p.lastOrderDate,
+          total_revenue: p.totalSpend,
+          sku_count: 1,
+        })),
+      ],
+      pitch_opportunities: (local.pitchProducts||[]).map(p => ({
+        product: p.name || p.productName,
+        total_market_revenue: p.ytd || p.totalSpend || 0,
+      })),
+    };
+    detailCache[clinicName] = detail;
+    return detail;
+  }
 
-  const clinic = detailData.result;
-  detailCache[clinicName] = clinic;
-  return clinic;
+  // Fallback to fragrant-cloud if not in local data
+  const res = await fetch(`${PSTOOL}/ai-chat`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ tool: "get_clinic_detail", args: { clinic_name: clinicName, show_skus: true } })
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.error || "Failed to load clinic detail");
+  detailCache[clinicName] = data.result;
+  return data.result;
 }
 
 function renderOrders(clinic, sid) {
   const el = document.getElementById(`itab-${sid}-orders`);
   if (!el) return;
+
+  // Update rep badge with correct rep from fragrant-cloud
+  if (clinic.rep) {
+    const repEl = document.querySelector(`#detail-${sid} .rep-badge`);
+    if (repEl) repEl.textContent = `Rep: ${clinic.rep}`;
+  }
+
   const products = clinic.products || [];
   const stopped = products.filter(p => p.status === "Stopped" || p.status === "Past Only");
   const active  = products.filter(p => p.status === "Active");
   let html = "";
 
-  // Revenue summary
+  // Revenue summary from fragrant-cloud
   const rev = clinic.revenue || {};
   if (rev["2026_ytd"] !== undefined) {
     html += `<div class="spend-row" style="margin-bottom:12px">
@@ -496,42 +548,60 @@ function renderOrders(clinic, sid) {
     </div>`;
   }
 
+  function prodRows(list, lostCol) {
+    return list.map((p, i) => {
+      const rowId = `prod-${sid}-${i}-${lostCol}`;
+      const hasOrders = p.skus?.some(s => s.orders?.length) || p.orders?.length;
+      let rows = `<tr style="cursor:${hasOrders?'pointer':'default'}" onclick="${hasOrders?`toggleProdOrders('${rowId}')`:''}" >
+        <td><div class="prod-name">
+          ${hasOrders?`<span style="font-size:10px;color:#aaa;margin-right:4px">▶</span>`:""}
+          ${esc(p.product)}
+        </div></td>
+        <td style="color:#888">${p.sku_count||1}</td>
+        <td style="color:#888">${p.order_count}</td>
+        <td style="color:#888">${p.last_order_date||"—"}</td>
+        <td class="${lostCol?"lost":"active-tag"}">${fmt(lostCol?(p.lost_revenue||p.total_revenue):p.total_revenue)}</td>
+      </tr>`;
+
+      // SKU rows + order history (hidden by default)
+      if (p.skus?.length) {
+        rows += `<tr id="${rowId}" style="display:none"><td colspan="5" style="padding:0">
+          <div style="background:#F8F8F8;padding:8px 12px;border-top:1px solid #EEE">`;
+        p.skus.forEach(s => {
+          rows += `<div style="font-size:12px;font-weight:500;color:#333;margin-bottom:4px">${esc(s.product)} <span style="color:#aaa;font-weight:normal">${fmt(s.total_revenue)}</span></div>`;
+          if (s.orders?.length) {
+            rows += `<table style="width:100%;font-size:11px;margin-bottom:8px;color:#666"><thead><tr><th style="text-align:left;padding-bottom:3px">Date</th><th style="text-align:right">Amount</th></tr></thead><tbody>`;
+            s.orders.forEach(o => {
+              rows += `<tr><td>${esc(o.date)}</td><td style="text-align:right">${fmt(o.amount)}</td></tr>`;
+            });
+            rows += `</tbody></table>`;
+          }
+        });
+        rows += `</div></td></tr>`;
+      } else if (p.orders?.length) {
+        // Single SKU with order history
+        rows += `<tr id="${rowId}" style="display:none"><td colspan="5" style="padding:0">
+          <div style="background:#F8F8F8;padding:8px 12px;border-top:1px solid #EEE">
+          <table style="width:100%;font-size:11px;color:#666"><thead><tr><th style="text-align:left;padding-bottom:3px">Date</th><th style="text-align:right">Amount</th></tr></thead><tbody>`;
+        p.orders.forEach(o => {
+          rows += `<tr><td>${esc(o.date)}</td><td style="text-align:right">${fmt(o.amount)}</td></tr>`;
+        });
+        rows += `</tbody></table></div></td></tr>`;
+      }
+      return rows;
+    }).join("");
+  }
+
   if (stopped.length) {
     html += `<div class="detail-section"><div class="dl">⚠ Stopped ordering (${stopped.length})</div>
-      <table class="prod-table"><thead><tr><th>Product</th><th>SKUs</th><th>Orders</th><th>Last ordered</th><th>Lost revenue</th></tr></thead><tbody>`;
-    stopped.forEach(p => {
-      html += `<tr>
-        <td><div class="prod-name">${esc(p.product)}</div></td>
-        <td style="color:#888">${p.sku_count||1}</td>
-        <td style="color:#888">${p.order_count}</td>
-        <td style="color:#888">${p.last_order_date||"—"}</td>
-        <td class="lost">${fmt(p.lost_revenue||p.total_revenue)}</td>
-      </tr>`;
-      // Show SKUs if available
-      if (p.skus?.length > 1) {
-        p.skus.forEach(s => {
-          html += `<tr style="background:#FAFAFA"><td style="padding-left:16px;font-size:11px;color:#888" colspan="4">↳ ${esc(s.product)}</td><td style="font-size:11px;color:#888;text-align:right">${fmt(s.total_revenue)}</td></tr>`;
-        });
-      }
-    });
-    html += `</tbody></table></div>`;
+      <table class="prod-table"><thead><tr><th>Product</th><th>SKUs</th><th>Orders</th><th>Last ordered</th><th>Lost revenue</th></tr></thead>
+      <tbody>${prodRows(stopped, true)}</tbody></table></div>`;
   }
-
   if (active.length) {
     html += `<div class="detail-section"><div class="dl">Still ordering (${active.length})</div>
-      <table class="prod-table"><thead><tr><th>Product</th><th>SKUs</th><th>Orders</th><th>Last ordered</th><th>Revenue</th></tr></thead><tbody>`;
-    active.forEach(p => {
-      html += `<tr>
-        <td><div class="prod-name">${esc(p.product)}</div></td>
-        <td style="color:#888">${p.sku_count||1}</td>
-        <td style="color:#888">${p.order_count}</td>
-        <td style="color:#888">${p.last_order_date||"—"}</td>
-        <td class="active-tag">${fmt(p.total_revenue)}</td>
-      </tr>`;
-    });
-    html += `</tbody></table></div>`;
+      <table class="prod-table"><thead><tr><th>Product</th><th>SKUs</th><th>Orders</th><th>Last ordered</th><th>Revenue</th></tr></thead>
+      <tbody>${prodRows(active, false)}</tbody></table></div>`;
   }
-
   if (!stopped.length && !active.length) html = `<div class="inv-loading">No product history found.</div>`;
   el.innerHTML = html;
 }
@@ -541,10 +611,10 @@ function renderPitch(clinic, sid) {
   if (!el) return;
   const pitches = clinic.pitch_opportunities || [];
   if (!pitches.length) { el.innerHTML = `<div class="inv-loading">No pitch opportunities — clinic has ordered everything.</div>`; return; }
-  el.innerHTML = `<div class="dl" style="margin-bottom:8px">Top products this clinic hasn't ordered</div>` +
+  el.innerHTML = `<div class="dl" style="margin-bottom:8px">Top products this clinic hasn't ordered yet</div>` +
     pitches.map(p => `<div class="pitch-item">
-      <div class="pitch-name">${esc(p.product||"")}</div>
-      <div class="pitch-rev">${fmt(p.total_market_revenue)} market</div>
+      <div class="pitch-name">${esc(p.product||p.name||"Unknown product")}</div>
+      <div class="pitch-rev">${fmt(p.total_market_revenue||p.ytd||0)} market</div>
     </div>`).join("");
 }
 
@@ -646,60 +716,116 @@ async function loadInvoices(sid, clinicName) {
   }
 }
 
-// ── Pipeline ───────────────────────────────────────────────────
+// ── Toggle product order rows ──────────────────────────────────
+function toggleProdOrders(rowId) {
+  const row = document.getElementById(rowId);
+  if (!row) return;
+  const isOpen = row.style.display !== "none";
+  row.style.display = isOpen ? "none" : "table-row";
+  // Update arrow
+  const trigger = row.previousElementSibling;
+  if (trigger) {
+    const arrow = trigger.querySelector("span");
+    if (arrow) arrow.textContent = isOpen ? "▶" : "▼";
+  }
+}
+
+// ── Pipeline tab (inner per-clinic) ───────────────────────────
 const pipelineCache = {};
 async function loadPipeline(sid) {
   const el = document.getElementById(`itab-${sid}-pipeline`);
   if (!el || el.dataset.loaded) return;
   el.dataset.loaded = "1";
-  el.innerHTML = `<div class="inv-loading">Loading pipeline data…</div>`;
+  el.innerHTML = `<div class="inv-loading">Loading…</div>`;
+  el.innerHTML = `<div class="inv-loading">See Pipeline & Trends tab for full pipeline data.</div>`;
+}
+
+// ── Main Pipeline tab ──────────────────────────────────────────
+let mainPipelineLoaded = false;
+async function loadMainPipeline() {
+  if (mainPipelineLoaded) return;
+  mainPipelineLoaded = true;
+  const el = document.getElementById("pipelineContent");
+
   try {
-    if (!pipelineCache.data) {
-      const [atRiskRes, winbackRes, growersRes] = await Promise.all([
-        fetch(`${PSTOOL}/ai-chat`, { method:"POST", headers:{"Content-Type":"application/json"},
-          body: JSON.stringify({ tool:"compare_product_adoption", args:{ product_search:"", had_year:2025, missing_year:2026, limit:10 } }) }),
-        fetch(`${PSTOOL}/ai-chat`, { method:"POST", headers:{"Content-Type":"application/json"},
-          body: JSON.stringify({ tool:"rank_clinics", args:{ metric:"revenue_2025", direction:"top", limit:10 } }) }),
-        fetch(`${PSTOOL}/ai-chat`, { method:"POST", headers:{"Content-Type":"application/json"},
-          body: JSON.stringify({ tool:"compare_periods", args:{ period_a:"year", period_b:"year", offset_a:0, offset_b:-1, group_by:"clinic", limit:10 } }) }),
-      ]);
-      const [atRisk, winback, growers] = await Promise.all([atRiskRes.json(), winbackRes.json(), growersRes.json()]);
-      pipelineCache.data = { atRisk, winback, growers };
-    }
+    // Run all 3 pipeline queries in parallel
+    const [winbackRes, growersRes, colderRes] = await Promise.all([
+      // Win-back: ordered 2025 not 2026
+      fetch(`${PSTOOL}/ai-chat`, { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ tool:"compare_product_adoption", args:{ product_search:"", had_year:2025, missing_year:2026, limit:20 } }) }),
+      // Fastest growing products YTD vs last year
+      fetch(`${PSTOOL}/ai-chat`, { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ tool:"compare_periods", args:{ period_a:"year", offset_a:0, period_b:"year", offset_b:-1, group_by:"product", limit:15 } }) }),
+      // Cooling off products
+      fetch(`${PSTOOL}/ai-chat`, { method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ tool:"compare_periods", args:{ period_a:"year", offset_a:0, period_b:"year", offset_b:-1, group_by:"product", limit:15 } }) }),
+    ]);
 
-    const { atRisk, winback, growers } = pipelineCache.data;
-    let html = "";
+    const [winbackData, growersData] = await Promise.all([
+      winbackRes.json(), growersRes.json()
+    ]);
 
-    // At-risk (stopped ordering 2026 vs 2025)
-    const atRiskList = atRisk.result?.results || [];
-    if (atRiskList.length) {
-      html += `<div class="detail-section"><div class="dl">🚨 Win-back targets (ordered 2025, not 2026)</div>`;
-      atRiskList.slice(0,10).forEach(c => {
-        html += `<div class="pitch-item">
+    const winback = winbackData.result?.results || [];
+    const allProducts = growersData.result?.results || [];
+    const hotter = allProducts.filter(p => p.change_abs > 0).slice(0, 10);
+    const colder = allProducts.filter(p => p.change_abs < 0).sort((a,b)=>a.change_abs-b.change_abs).slice(0, 10);
+
+    let html = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">`;
+
+    // Win-back targets
+    html += `<div style="background:#fff;border-radius:10px;border:1px solid #E5E5E5;padding:16px">
+      <div class="dl" style="margin-bottom:10px">🎯 Win-back targets (ordered 2025, gone 2026)</div>`;
+    if (winback.length) {
+      winback.forEach(c => {
+        html += `<div class="pitch-item" style="cursor:pointer" onclick="searchClinic('${esc(c.clinic).replace(/'/g,"\\'")}')">
           <div class="pitch-name">${esc(c.clinic)}</div>
           <div class="pitch-rev" style="color:#C0392B">${fmt(c.revenue_2025)} lost</div>
         </div>`;
       });
-      html += `</div>`;
-    }
+    } else html += `<div class="inv-loading">No data</div>`;
+    html += `</div>`;
 
-    // Fastest growers
-    const growerList = growers.result?.results || [];
-    if (growerList.length) {
-      html += `<div class="detail-section"><div class="dl">🚀 Fastest growers (2025 → 2026)</div>`;
-      growerList.filter(c=>c.change_abs>0).slice(0,10).forEach(c => {
+    // Hotter products
+    html += `<div style="background:#fff;border-radius:10px;border:1px solid #E5E5E5;padding:16px">
+      <div class="dl" style="margin-bottom:10px">🔥 Trending up (2025 → 2026 YTD)</div>`;
+    if (hotter.length) {
+      hotter.forEach(p => {
+        const pct = p.change_pct != null ? `+${p.change_pct}%` : "";
         html += `<div class="pitch-item">
-          <div class="pitch-name">${esc(c.clinic)}</div>
-          <div class="pitch-rev">+${fmt(c.change_abs)}</div>
+          <div class="pitch-name">${esc(p.product||"")}</div>
+          <div class="pitch-rev">+${fmt(p.change_abs)} ${pct}</div>
         </div>`;
       });
-      html += `</div>`;
-    }
+    } else html += `<div class="inv-loading">No data</div>`;
+    html += `</div>`;
 
-    el.innerHTML = html || `<div class="inv-loading">No pipeline data available.</div>`;
+    // Cooling off products
+    html += `<div style="background:#fff;border-radius:10px;border:1px solid #E5E5E5;padding:16px">
+      <div class="dl" style="margin-bottom:10px">❄️ Cooling off (2025 → 2026 YTD)</div>`;
+    if (colder.length) {
+      colder.forEach(p => {
+        const pct = p.change_pct != null ? `${p.change_pct}%` : "";
+        html += `<div class="pitch-item">
+          <div class="pitch-name">${esc(p.product||"")}</div>
+          <div class="pitch-rev" style="color:#C0392B">${fmt(p.change_abs)} ${pct}</div>
+        </div>`;
+      });
+    } else html += `<div class="inv-loading">No data</div>`;
+    html += `</div>`;
+
+    html += `</div>`; // close grid
+    el.innerHTML = html;
   } catch(e) {
-    el.innerHTML = `<div class="inv-loading" style="color:#C0392B">Failed: ${esc(e.message)}</div>`;
+    el.innerHTML = `<div class="error-box">Failed to load pipeline: ${esc(e.message)}</div>`;
   }
+}
+
+// Click a win-back clinic name → search for it
+function searchClinic(name) {
+  document.getElementById("searchInput").value = name;
+  applySearch(name);
+  // Switch to list tab
+  document.querySelectorAll(".main-tab")[0].click();
 }
 
 // ── Geocode + maps ─────────────────────────────────────────────
